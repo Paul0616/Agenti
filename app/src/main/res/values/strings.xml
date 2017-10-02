@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Agenti</string>
+    <string name="btn_comanda">Comanda</string>
 </resources>
