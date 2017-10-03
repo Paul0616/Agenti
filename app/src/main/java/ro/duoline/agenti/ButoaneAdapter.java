@@ -8,7 +8,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,6 +57,17 @@ public class ButoaneAdapter extends RecyclerView.Adapter<ButoaneAdapter.ViewHold
             textButon = (TextView) view.findViewById(R.id.buton_text);
             iconButon = (ImageView) view.findViewById(R.id.buton_icon);
             cerc = (View) view.findViewById(R.id.buton_cerc);
+            LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.lb);
+
+            linearLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(butoane.get(getAdapterPosition()).getTextButon().equals("DECONECTARE")){
+                        Toast.makeText(context, "LOG OUT", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+
         }
     }
 }
