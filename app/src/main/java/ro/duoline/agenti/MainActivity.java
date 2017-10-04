@@ -35,6 +35,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 
@@ -45,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private ButoaneAdapter adapter;
     private static Context context;
     private String numeDbFirma, client, passw;
-    final String FIRMA = "test";
+
     final String CLIENT = "agent1";
     final String PAROLA = "11";
     private AlertDialog alertDialog;
@@ -53,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private final static String FIRME_URL_BASE = "http://www.contliv.eu/agentiAplicatie";
     private final static String FIRME_FILE_PHP_QUERY = "getFirme.php";
     private JSONArray jArray; //contine lista cu toate firmele si datele de conectare la Bazele lor de Date
+    DBController controller = new DBController(this);
 
     private ArrayList<ButoaneMeniuPrincipal>  butoane;
     @Override
@@ -81,14 +83,40 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         LayoutInflater li = LayoutInflater.from(context);
         View promptsView = li.inflate(R.layout.cere_parola, null);
 
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
         alertDialogBuilder.setView(promptsView);
 
         final EditText numeFirma = (EditText) promptsView.findViewById(R.id.editTextNume);
         final EditText user = (EditText) promptsView.findViewById(R.id.editTextUser);
         final EditText parola = (EditText) promptsView.findViewById(R.id.editTextParola);
+        user.setEnabled(false);
+        parola.setEnabled(false);
 
+        numeFirma.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(controller.isFirmaInDB(s.toString())) {
+                    alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+                    //user.setEnabled(true);
+                    //parola.setEnabled(true);
+                } else {
+                    alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+                    numeFirma.setError("Firma nu exista");
+                    user.setEnabled(false);
+                    parola.setEnabled(false);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
         //set dialog message
         alertDialogBuilder.setCancelable(false)
                .setPositiveButton("OK", null);
@@ -104,12 +132,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 numeDbFirma = numeFirma.getText().toString();
                 client = user.getText().toString();
                 passw = parola.getText().toString();
-                if(FIRMA.equals(numeDbFirma) && CLIENT.equals(client) && PAROLA.equals(passw)){
+
+                if(CLIENT.equals(client) && PAROLA.equals(passw)){
                     alertDialog.dismiss();
                 } else {
-                   if(!FIRMA.equals(numeDbFirma)){
-                       numeFirma.setError("Firma nu exista");
-                   }
+
                     if(!CLIENT.equals(client)){
                         user.setError("User name gresit");
                     }
@@ -252,11 +279,19 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 jArray = null;
                 if (data != null) {
                     jArray = new JSONArray(data);
-                   // String test = jArray.getJSONObject(11).getString("firma").toString();
+                    // String test = jArray.getJSONObject(11).getString("firma").toString();
                     //Toast.makeText(context,test,Toast.LENGTH_SHORT).show();
-                    if(jArray != null) {
-                        alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(true);
+                    controller.deleteAllRecords();
+                    for (int i = 0; i < jArray.length(); i++){
+                        HashMap<String, String> queryValues = new HashMap<String, String>();
+                        queryValues.put("firma", jArray.getJSONObject(i).getString("firma").toString());
+                        queryValues.put("ip", jArray.getJSONObject(i).getString("ip").toString());
+                        queryValues.put("nume_DB", jArray.getJSONObject(i).getString("nume_db").toString());
+                        queryValues.put("user_DB", jArray.getJSONObject(i).getString("user_db").toString());
+                        queryValues.put("pass_DB", jArray.getJSONObject(i).getString("pass_db").toString());
+                        controller.insertFirme(queryValues);
                     }
+
                 } else {
                     Toast.makeText(context, "Verifica conexiunea de internet. Pentru logare este necesara...",Toast.LENGTH_LONG).show();
                 }
