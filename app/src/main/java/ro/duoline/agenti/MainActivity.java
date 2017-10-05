@@ -1,5 +1,6 @@
 package ro.duoline.agenti;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
@@ -51,8 +52,10 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     final String PAROLA = "11";
     private AlertDialog alertDialog;
     private static final int FIRME_LOADER_ID = 33;
+    private static final int USERI_LOADER_ID = 34;
     private final static String FIRME_URL_BASE = "http://www.contliv.eu/agentiAplicatie";
     private final static String FIRME_FILE_PHP_QUERY = "getFirme.php";
+    private final static String USERI_FILE_PHP_QUERY = "getUseri.php";
     private JSONArray jArray; //contine lista cu toate firmele si datele de conectare la Bazele lor de Date
     DBController controller = new DBController(this);
 
@@ -102,6 +105,10 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if(controller.isFirmaInDB(s.toString())) {
                     alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+                    List<ContentValues> date = controller.getDateConectare(s.toString());
+                    String dateconectare = date.get(0).get("ip").toString()+","+date.get(1).get("nume_DB").toString()+","+date.get(2).get("user_DB").toString()+","+date.get(3).get("pass_DB").toString();
+                    URL url = makeURL(FIRME_URL_BASE, USERI_FILE_PHP_QUERY, dateconectare);
+                    makeURLConnection(makeURL(FIRME_URL_BASE, USERI_FILE_PHP_QUERY, dateconectare), USERI_LOADER_ID);
                     //user.setEnabled(true);
                     //parola.setEnabled(true);
                 } else {
@@ -133,29 +140,27 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 client = user.getText().toString();
                 passw = parola.getText().toString();
 
-                if(CLIENT.equals(client) && PAROLA.equals(passw)){
+                if(controller.isUserValid(client, passw)){
                     alertDialog.dismiss();
                 } else {
-
-                    if(!CLIENT.equals(client)){
                         user.setError("User name gresit");
-                    }
-                    if(!PAROLA.equals(passw)){
                         parola.setError("Parola gresita");
-                    }
                 }
             }
         });
 
 
     }
-
+    private void tes(){
+        alertDialog.findViewById(R.id.editTextUser).setEnabled(true);
+        alertDialog.findViewById(R.id.editTextParola).setEnabled(true);
+    }
 
     //*****************************************************************
 
 
     public void loadListaFirme(){
-        makeURLConnection(makeURL(FIRME_URL_BASE, FIRME_FILE_PHP_QUERY), FIRME_LOADER_ID);
+        makeURLConnection(makeURL(FIRME_URL_BASE, FIRME_FILE_PHP_QUERY, ""), FIRME_LOADER_ID);
 
     }
 
@@ -171,9 +176,14 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         }
     }
 
-    private URL makeURL(String base, String file){
-        Uri bultUri = Uri.parse(base);
-        bultUri = Uri.withAppendedPath(bultUri, file);
+    private URL makeURL(String base, String file, String parameters){
+        Uri bultUri;
+        //bultUri = Uri.withAppendedPath(bultUri, file);
+        if (!parameters.isEmpty()){
+            bultUri = Uri.parse(base).buildUpon().appendPath(file).appendQueryParameter("dateconectare", parameters).build();
+        } else {
+            bultUri = Uri.parse(base).buildUpon().appendPath(file).build();
+        }
         URL queryURL = null;
         try {
             queryURL = new URL(bultUri.toString());
@@ -281,7 +291,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                     jArray = new JSONArray(data);
                     // String test = jArray.getJSONObject(11).getString("firma").toString();
                     //Toast.makeText(context,test,Toast.LENGTH_SHORT).show();
-                    controller.deleteAllRecords();
+                    controller.deleteAllRecords("db_list");
                     for (int i = 0; i < jArray.length(); i++){
                         HashMap<String, String> queryValues = new HashMap<String, String>();
                         queryValues.put("firma", jArray.getJSONObject(i).getString("firma").toString());
@@ -294,6 +304,29 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
                 } else {
                     Toast.makeText(context, "Verifica conexiunea de internet. Pentru logare este necesara...",Toast.LENGTH_LONG).show();
+                }
+            }
+            if (loader.getId() == USERI_LOADER_ID) {
+                jArray = null;
+                if (data != null) {
+                    jArray = new JSONArray(data);
+                    // String test = jArray.getJSONObject(11).getString("firma").toString();
+                    //Toast.makeText(context,test,Toast.LENGTH_SHORT).show();
+                    controller.deleteAllRecords("acces");
+                    for (int i = 0; i < jArray.length(); i++) {
+                        HashMap<String, String> queryValuesString = new HashMap<String, String>();
+                        queryValuesString.put("user", jArray.getJSONObject(i).getString("user").toString());
+                        queryValuesString.put("parola", jArray.getJSONObject(i).getString("parola").toString());
+                        queryValuesString.put("cod_gestiune", jArray.getJSONObject(i).getString("cod_gestiune").toString());
+
+                        HashMap<String, Integer> queryValuesInt = new HashMap<String, Integer>();
+                        queryValuesInt.put("id_gestiune", jArray.getJSONObject(i).getInt("id_gestiune"));
+                        queryValuesInt.put("nr_gestiune", jArray.getJSONObject(i).getInt("nr_gestiune"));
+                        controller.insertUseri(queryValuesString, queryValuesInt);
+                    }
+                    tes();
+                } else {
+                    Toast.makeText(context, "Verifica conexiunea de internet. Pentru logare este necesara...", Toast.LENGTH_LONG).show();
                 }
             }
         }catch (JSONException e) {
