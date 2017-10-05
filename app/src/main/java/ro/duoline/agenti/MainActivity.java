@@ -47,9 +47,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private ButoaneAdapter adapter;
     private static Context context;
     private String numeDbFirma, client, passw;
+    //http://contliv.eu/agentiAplicatie/getProduse.php?dateconectare=192.168.88.5%2Ctixy_test%2CSYSDBA%2Cc%40ntliv2015&debit=371
 
-    final String CLIENT = "agent1";
-    final String PAROLA = "11";
     private AlertDialog alertDialog;
     private static final int FIRME_LOADER_ID = 33;
     private static final int USERI_LOADER_ID = 34;
@@ -73,10 +72,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
         loadListaFirme();
-        if (numeDbFirma == null && client == null && passw == null){
+        if (!SaveSharedPreference.getLogged(this)){
             cereParola();
+            alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(false);
         }
-        alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(false);
+
 
     }
 
@@ -142,6 +142,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
                 if(controller.isUserValid(client, passw)){
                     alertDialog.dismiss();
+                    SaveSharedPreference.setLoggedIn(MainActivity.this);
                 } else {
                         user.setError("User name gresit");
                         parola.setError("Parola gresita");

@@ -1,6 +1,7 @@
 package ro.duoline.agenti;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
@@ -63,7 +64,10 @@ public class ButoaneAdapter extends RecyclerView.Adapter<ButoaneAdapter.ViewHold
                 @Override
                 public void onClick(View v) {
                     if(butoane.get(getAdapterPosition()).getTextButon().equals("DECONECTARE")){
-                        Toast.makeText(context, "LOG OUT", Toast.LENGTH_SHORT).show();
+                        SaveSharedPreference.setLogOut(context);
+                        Intent i = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
+                        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        context.startActivity(i);
                     }
                 }
             });
