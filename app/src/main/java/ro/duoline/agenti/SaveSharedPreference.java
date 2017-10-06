@@ -27,6 +27,24 @@ public class SaveSharedPreference {
         editor.commit();
     }
 
+    public static void setFirma(Context ctx, String firm){
+        SharedPreferences.Editor editor = getSharedPreference(ctx).edit();
+        editor.putString("FIRMA", firm);
+        editor.commit();
+    }
+
+    public static void setDebit(Context ctx, String debit){
+        SharedPreferences.Editor editor = getSharedPreference(ctx).edit();
+        editor.putString("DEBIT", debit);
+        editor.commit();
+    }
+
+    public static void setUser(Context ctx, String user){
+        SharedPreferences.Editor editor = getSharedPreference(ctx).edit();
+        editor.putString("USER", user);
+        editor.commit();
+    }
+
     public static boolean getLogged(Context ctx){
         return getSharedPreference(ctx).getBoolean("LOGGED", false);
     }

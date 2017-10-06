@@ -16,7 +16,7 @@ import java.util.List;
 
 public class DBController extends SQLiteOpenHelper {
     public DBController(Context applicationcontext){
-        super(applicationcontext, "test.db", null, 2);
+        super(applicationcontext, "test.db", null, 3);
     }
 
     //Create Table
@@ -26,7 +26,7 @@ public class DBController extends SQLiteOpenHelper {
         String query;
         query = "CREATE TABLE db_list (ID INTEGER PRIMARY KEY AUTOINCREMENT, firma TEXT, ip TEXT, nume_DB TEXT, user_DB TEXT, pass_DB TEXT)";
         db.execSQL(query);
-        query = "CREATE TABLE acces (ID INTEGER PRIMARY KEY AUTOINCREMENT, id_gestiune INTEGER, user TEXT, parola TEXT, cod_gestiune TEXT, nr_gestiune INTEGER)";
+        query = "CREATE TABLE acces (ID INTEGER PRIMARY KEY AUTOINCREMENT, id_gestiune INTEGER, user TEXT, parola TEXT, cod_gestiune TEXT, nr_gestiune INTEGER, nume_gestiune TEXT, debit TEXT, pozitie_pret INTEGER)";
         db.execSQL(query);
     }
 
@@ -69,6 +69,9 @@ public class DBController extends SQLiteOpenHelper {
         values.put("parola", queryValues.get("parola"));
         values.put("cod_gestiune", queryValues.get("cod_gestiune"));
         values.put("nr_gestiune", queryValuesInt.get("nr_gestiune"));
+        values.put("nume_gestiune", queryValues.get("nume_gestiune"));
+        values.put("debit", queryValues.get("debit"));
+        values.put("pozitie_pret", queryValuesInt.get("pozitie_pret"));
         database.insert("acces", null, values);
         database.close();
 
@@ -87,18 +90,35 @@ public class DBController extends SQLiteOpenHelper {
         }
     }
 
+
+
     public Boolean isUserValid(String user, String pass){
         //String sel = "SELECT * FROM acces";
         String selectQuery = "SELECT * FROM acces WHERE user = '"+user+"' AND parola = '"+ pass +"'";
         SQLiteDatabase database = this.getWritableDatabase();
         Cursor cursor = database.rawQuery(selectQuery, null);
         int count = cursor.getCount();
-     //   database.close();
+        database.close();
         if (count > 0) {
         return true;
         } else {
             return false;
         }
+    }
+
+    public ContentValues getDebit(String user, String pass){
+        //String sel = "SELECT * FROM acces";
+        String selectQuery = "SELECT * FROM acces WHERE user = '"+user+"' AND parola = '"+ pass +"'";
+        SQLiteDatabase database = this.getWritableDatabase();
+        Cursor cursor = database.rawQuery(selectQuery, null);
+
+        cursor.moveToFirst();
+        ContentValues cv;
+        cv = new ContentValues();
+        cv.put("debit", cursor.getString(cursor.getColumnIndex("debit")));
+        database.close();
+        return cv;
+
     }
 
     synchronized public List<ContentValues> getDateConectare(String firm){

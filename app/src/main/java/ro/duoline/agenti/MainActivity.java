@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.ContextCompat;
@@ -75,6 +76,10 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         if (!SaveSharedPreference.getLogged(this)){
             cereParola();
             alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(false);
+        } else {
+            String title = "Firma: " + PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("FIRMA", "Agenti").toUpperCase();
+            title = title + " User: " + PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("USER", "");
+            this.setTitle(title);
         }
 
 
@@ -143,6 +148,13 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 if(controller.isUserValid(client, passw)){
                     alertDialog.dismiss();
                     SaveSharedPreference.setLoggedIn(MainActivity.this);
+                    SaveSharedPreference.setFirma(MainActivity.this, numeDbFirma);
+                    ContentValues cv = controller.getDebit(client, passw);
+                    SaveSharedPreference.setDebit(MainActivity.this, cv.get("debit").toString());
+                    SaveSharedPreference.setUser(MainActivity.this, client);
+                    String title = "Firma: " + PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("FIRMA", "Agenti").toUpperCase();
+                    title = title + " User: " + PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("USER", "");
+                    MainActivity.this.setTitle(title);
                 } else {
                         user.setError("User name gresit");
                         parola.setError("Parola gresita");
@@ -319,10 +331,13 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                         queryValuesString.put("user", jArray.getJSONObject(i).getString("user").toString());
                         queryValuesString.put("parola", jArray.getJSONObject(i).getString("parola").toString());
                         queryValuesString.put("cod_gestiune", jArray.getJSONObject(i).getString("cod_gestiune").toString());
+                        queryValuesString.put("nume_gestiune", jArray.getJSONObject(i).getString("nume_gestiune").toString());
+                        queryValuesString.put("debit", jArray.getJSONObject(i).getString("debit").toString());
 
                         HashMap<String, Integer> queryValuesInt = new HashMap<String, Integer>();
                         queryValuesInt.put("id_gestiune", jArray.getJSONObject(i).getInt("id_gestiune"));
                         queryValuesInt.put("nr_gestiune", jArray.getJSONObject(i).getInt("nr_gestiune"));
+                        queryValuesInt.put("pozitie_pret", jArray.getJSONObject(i).getInt("pozitie_pret"));
                         controller.insertUseri(queryValuesString, queryValuesInt);
                     }
                     tes();
