@@ -3,6 +3,7 @@
     package="ro.duoline.agenti">
 
     <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -17,6 +18,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".CategoriiProduse"
+            android:parentActivityName=".MainActivity"></activity>
+
     </application>
 
 </manifest>

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,7 +17,7 @@ import java.util.List;
 
 public class DBController extends SQLiteOpenHelper {
     public DBController(Context applicationcontext){
-        super(applicationcontext, "test.db", null, 3);
+        super(applicationcontext, "test.db", null, 4);
     }
 
     //Create Table
@@ -28,6 +29,8 @@ public class DBController extends SQLiteOpenHelper {
         db.execSQL(query);
         query = "CREATE TABLE acces (ID INTEGER PRIMARY KEY AUTOINCREMENT, id_gestiune INTEGER, user TEXT, parola TEXT, cod_gestiune TEXT, nr_gestiune INTEGER, nume_gestiune TEXT, debit TEXT, pozitie_pret INTEGER)";
         db.execSQL(query);
+        query = "CREATE TABLE produse (ID INTEGER PRIMARY KEY AUTOINCREMENT, cod INTEGER, stoc INTEGER, rezervata INTEGER, clasa TEXT, denumire TEXT, um TEXT, tva INTEGER, pret_livr REAL)";
+        db.execSQL(query);
     }
 
     @Override
@@ -36,6 +39,8 @@ public class DBController extends SQLiteOpenHelper {
         query = "DROP TABLE IF EXISTS db_list";
         db.execSQL(query);
         query = "DROP TABLE IF EXISTS acces";
+        db.execSQL(query);
+        query = "DROP TABLE IF EXISTS produse";
         db.execSQL(query);
         onCreate(db);
     }
@@ -74,6 +79,26 @@ public class DBController extends SQLiteOpenHelper {
         values.put("pozitie_pret", queryValuesInt.get("pozitie_pret"));
         database.insert("acces", null, values);
         database.close();
+
+    }
+
+    /* Insert PRODUSE in database */
+    public void insertProduse(HashMap<String, String> queryValues, HashMap<String, Integer> queryValuesInt, HashMap<String, Double> queryValuesFloat, SQLiteDatabase database){
+        long ins;
+        //SQLiteDatabase database = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("cod", queryValuesInt.get("cod"));
+        values.put("stoc", queryValuesInt.get("stoc"));
+        values.put("rezervata", queryValuesInt.get("rezervata"));
+        values.put("clasa", queryValues.get("clasa"));
+        values.put("denumire", queryValues.get("denumire"));
+        values.put("um", queryValues.get("um"));
+        values.put("tva", queryValuesInt.get("tva"));
+        values.put("pret_livr", queryValuesFloat.get("pret_livr"));
+
+        ins = database.insert("produse", null, values);
+
+       // database.close();
 
     }
 
@@ -121,7 +146,7 @@ public class DBController extends SQLiteOpenHelper {
 
     }
 
-    synchronized public List<ContentValues> getDateConectare(String firm){
+    synchronized public String getDateConectare(String firm){
         List<ContentValues> data = new ArrayList<ContentValues>();
         ContentValues cv;
         String selectQuery = "SELECT * FROM db_list WHERE firma = '"+firm+"'";
@@ -141,6 +166,38 @@ public class DBController extends SQLiteOpenHelper {
         cv.put("pass_DB", cursor.getString(cursor.getColumnIndex("pass_DB")));
         data.add(cv);
         database.close();
+        String dateconectare = data.get(0).get("ip").toString()+","+data.get(1).get("nume_DB").toString()+","+data.get(2).get("user_DB").toString()+","+data.get(3).get("pass_DB").toString();
+        return dateconectare;
+    }
+    synchronized public void getProduse(Context ctx){
+        ContentValues cv;
+        String selectQuery = "SELECT * FROM produse";
+        SQLiteDatabase database = this.getWritableDatabase();
+        Cursor cursor = database.rawQuery(selectQuery, null);
+        cursor.moveToFirst();
+        Toast.makeText(ctx, Integer.toString(cursor.getCount()), Toast.LENGTH_LONG).show();
+        //while(!cursor.isAfterLast()){
+        //   cv = new ContentValues();
+       //     cv.put("clasa", cursor.getString(cursor.getColumnIndex("clasa")));
+       //     cv.put("cod", cursor.getInt(cursor.getColumnIndex("cod")));
+
+       // }
+    }
+    synchronized public List<CategoriiValues> getCategorii(){
+        List<CategoriiValues> data = new ArrayList<CategoriiValues>();
+        CategoriiValues cv;
+        String selectQuery = "SELECT clasa, COUNT(cod) AS buc FROM produse GROUP BY clasa";
+        SQLiteDatabase database = this.getWritableDatabase();
+        Cursor cursor = database.rawQuery(selectQuery, null);
+        cursor.moveToFirst();
+        while(!cursor.isAfterLast()){
+            cv = new CategoriiValues();
+            cv.setNumeCategorie(cursor.getString(cursor.getColumnIndex("clasa")));
+            cv.setNrProduseInCategorie(cursor.getInt(cursor.getColumnIndex("buc")));
+            data.add(cv);
+            cursor.moveToNext();
+        }
         return data;
+
     }
 }

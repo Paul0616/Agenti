@@ -33,6 +33,17 @@ public class SaveSharedPreference {
         editor.commit();
     }
 
+    public static void setLastRefreshTime(Context ctx, long time)
+    {
+        SharedPreferences.Editor editor = getSharedPreference(ctx).edit();
+        editor.putLong("LASTREFRESH", time);
+        editor.commit();
+    }
+
+    public static long getLastRefreshTime(Context ctx){
+        return getSharedPreference(ctx).getLong("LASTREFRESH", 0);
+    }
+
     public static void setDebit(Context ctx, String debit){
         SharedPreferences.Editor editor = getSharedPreference(ctx).edit();
         editor.putString("DEBIT", debit);
