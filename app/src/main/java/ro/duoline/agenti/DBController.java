@@ -169,6 +169,23 @@ public class DBController extends SQLiteOpenHelper {
         String dateconectare = data.get(0).get("ip").toString()+","+data.get(1).get("nume_DB").toString()+","+data.get(2).get("user_DB").toString()+","+data.get(3).get("pass_DB").toString();
         return dateconectare;
     }
+
+    synchronized public int getNrProduse(Context ctx, Boolean all){
+        ContentValues cv;
+        String selectQuery;
+        if(all) {
+            selectQuery  = "SELECT * FROM produse";
+        } else {
+            selectQuery = "SELECT * FROM produse WHERE stoc <> 0";
+        }
+        SQLiteDatabase database = this.getWritableDatabase();
+        Cursor cursor = database.rawQuery(selectQuery, null);
+        cursor.moveToFirst();
+        int nrproduse = cursor.getCount();
+        database.close();
+        return nrproduse;
+    }
+
     synchronized public void getProduse(Context ctx){
         ContentValues cv;
         String selectQuery = "SELECT * FROM produse";
@@ -183,10 +200,26 @@ public class DBController extends SQLiteOpenHelper {
 
        // }
     }
-    synchronized public List<CategoriiValues> getCategorii(){
+
+
+
+    synchronized public List<CategoriiValues> getCategoriiFiltrate(Boolean all, String filtru){
         List<CategoriiValues> data = new ArrayList<CategoriiValues>();
         CategoriiValues cv;
         String selectQuery = "SELECT clasa, COUNT(cod) AS buc FROM produse GROUP BY clasa";
+        if(all && !filtru.isEmpty()) {
+            selectQuery = "SELECT clasa, COUNT(cod) AS buc FROM produse WHERE clasa LIKE '%"+filtru+"%' GROUP BY clasa";
+        }
+        if(!all && !filtru.isEmpty()){
+            selectQuery = "SELECT clasa, COUNT(cod) AS buc FROM produse WHERE stoc <> 0 AND clasa LIKE '%"+filtru+"%' GROUP BY clasa";
+        }
+        if(all && filtru.isEmpty()){
+            selectQuery = "SELECT clasa, COUNT(cod) AS buc FROM produse GROUP BY clasa";
+        }
+        if(!all && filtru.isEmpty()){
+            selectQuery = "SELECT clasa, COUNT(cod) AS buc FROM produse WHERE stoc <> 0 GROUP BY clasa";
+        }
+
         SQLiteDatabase database = this.getWritableDatabase();
         Cursor cursor = database.rawQuery(selectQuery, null);
         cursor.moveToFirst();
@@ -198,6 +231,5 @@ public class DBController extends SQLiteOpenHelper {
             cursor.moveToNext();
         }
         return data;
-
     }
 }

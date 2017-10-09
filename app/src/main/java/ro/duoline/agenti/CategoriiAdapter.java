@@ -21,9 +21,15 @@ public class CategoriiAdapter extends RecyclerView.Adapter<CategoriiAdapter.View
 
     public CategoriiAdapter(Context context, List<CategoriiValues> categoriiValues){
         this.context = context;
-        this.categoriiValues = categoriiValues;
+        setValues(categoriiValues);
 
     }
+
+    public  void setValues(List<CategoriiValues> categoriiValues){
+        this.categoriiValues = categoriiValues;
+    }
+
+
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         private TextView numecategorie;
@@ -35,6 +41,12 @@ public class CategoriiAdapter extends RecyclerView.Adapter<CategoriiAdapter.View
             numecategorie = (TextView) view.findViewById(R.id.categorie_text);
             nrProduseInCategorie = (TextView) view.findViewById(R.id.nr_produse_textView);
             nrCurent = (TextView) view.findViewById(R.id.crt_textView);
+            numecategorie.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v) {
+
+                }
+            });
         }
     }
 
@@ -55,4 +67,6 @@ public class CategoriiAdapter extends RecyclerView.Adapter<CategoriiAdapter.View
         holder.numecategorie.setText(categoriiValues.get(position).getNumeCategorie());
         holder.nrProduseInCategorie.setText(Integer.toString(categoriiValues.get(position).getNrProduseInCategorie()));
     }
+
+
 }
