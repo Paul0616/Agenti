@@ -1,6 +1,7 @@
 package ro.duoline.agenti;
 
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -44,7 +45,8 @@ public class CategoriiProduse extends AppCompatActivity {
         toateProduseleTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent i = new Intent(getApplicationContext(), ProduseActivity.class);
+                getApplicationContext().startActivity(i);
             }
         });
 

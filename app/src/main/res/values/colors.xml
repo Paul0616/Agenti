@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorPrimary">#3f51b5</color>
+    <color name="colorPrimaryDark">#303f9f</color>
     <color name="colorAccent">#ff4081</color>
     <color name="colorComanda">#df151a</color>
     <color name="colorScanare">#10a9ca</color>
     <color name="colorSalvate">#ff4100</color>
     <color name="colorProforme">#ffaa06</color>
-    <color name="colorFacturi">#5cc300</color>
+    <color name="colorFacturi">#8a9b0f</color>
     <color name="colorMemo">#07438e</color>
     <color name="colorDeconectare">#dc143c</color>
 </resources>

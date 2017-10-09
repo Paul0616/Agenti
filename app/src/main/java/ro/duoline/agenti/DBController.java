@@ -5,7 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.widget.Toast;
+
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -186,19 +186,28 @@ public class DBController extends SQLiteOpenHelper {
         return nrproduse;
     }
 
-    synchronized public void getProduse(Context ctx){
-        ContentValues cv;
+    synchronized public List<ProduseValues> getProduse(){
+        List<ProduseValues> data = new ArrayList<ProduseValues>();
+        ProduseValues pv;
         String selectQuery = "SELECT * FROM produse";
         SQLiteDatabase database = this.getWritableDatabase();
         Cursor cursor = database.rawQuery(selectQuery, null);
         cursor.moveToFirst();
-        Toast.makeText(ctx, Integer.toString(cursor.getCount()), Toast.LENGTH_LONG).show();
-        //while(!cursor.isAfterLast()){
-        //   cv = new ContentValues();
-       //     cv.put("clasa", cursor.getString(cursor.getColumnIndex("clasa")));
-       //     cv.put("cod", cursor.getInt(cursor.getColumnIndex("cod")));
 
-       // }
+        while(!cursor.isAfterLast()){
+            pv = new ProduseValues();
+            pv.setDenumire(cursor.getString(cursor.getColumnIndex("denumire")));
+            pv.setUm(cursor.getString(cursor.getColumnIndex("um")));
+            pv.setCodProdus(cursor.getInt(cursor.getColumnIndex("cod")));
+            pv.setStoc(cursor.getInt(cursor.getColumnIndex("stoc")));
+            pv.setRezervata(cursor.getInt(cursor.getColumnIndex("rezervata")));
+            pv.setTva(cursor.getInt(cursor.getColumnIndex("tva")));
+            pv.setPret_livr(cursor.getFloat(cursor.getColumnIndex("pret_livr")));
+            data.add(pv);
+            cursor.moveToNext();
+        }
+        database.close();
+        return data;
     }
 
 
@@ -206,18 +215,18 @@ public class DBController extends SQLiteOpenHelper {
     synchronized public List<CategoriiValues> getCategoriiFiltrate(Boolean all, String filtru){
         List<CategoriiValues> data = new ArrayList<CategoriiValues>();
         CategoriiValues cv;
-        String selectQuery = "SELECT clasa, COUNT(cod) AS buc FROM produse GROUP BY clasa";
+        String selectQuery = "SELECT clasa, COUNT(cod) AS buc FROM produse WHERE clasa <> GROUP BY clasa";
         if(all && !filtru.isEmpty()) {
-            selectQuery = "SELECT clasa, COUNT(cod) AS buc FROM produse WHERE clasa LIKE '%"+filtru+"%' GROUP BY clasa";
+            selectQuery = "SELECT clasa, COUNT(cod) AS buc FROM produse WHERE clasa LIKE '%"+filtru+"%' AND clasa <> '' GROUP BY clasa";
         }
         if(!all && !filtru.isEmpty()){
-            selectQuery = "SELECT clasa, COUNT(cod) AS buc FROM produse WHERE stoc <> 0 AND clasa LIKE '%"+filtru+"%' GROUP BY clasa";
+            selectQuery = "SELECT clasa, COUNT(cod) AS buc FROM produse WHERE stoc <> 0 AND clasa LIKE '%"+filtru+"%' AND CLASA <> '' GROUP BY clasa";
         }
         if(all && filtru.isEmpty()){
-            selectQuery = "SELECT clasa, COUNT(cod) AS buc FROM produse GROUP BY clasa";
+            selectQuery = "SELECT clasa, COUNT(cod) AS buc FROM produse WHERE clasa <> '' GROUP BY clasa";
         }
         if(!all && filtru.isEmpty()){
-            selectQuery = "SELECT clasa, COUNT(cod) AS buc FROM produse WHERE stoc <> 0 GROUP BY clasa";
+            selectQuery = "SELECT clasa, COUNT(cod) AS buc FROM produse WHERE stoc <> 0 AND clasa <> '' GROUP BY clasa";
         }
 
         SQLiteDatabase database = this.getWritableDatabase();
@@ -230,6 +239,7 @@ public class DBController extends SQLiteOpenHelper {
             data.add(cv);
             cursor.moveToNext();
         }
+        database.close();
         return data;
     }
 }
