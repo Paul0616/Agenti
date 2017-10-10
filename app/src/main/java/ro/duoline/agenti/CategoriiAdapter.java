@@ -1,6 +1,7 @@
 package ro.duoline.agenti;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,7 +45,9 @@ public class CategoriiAdapter extends RecyclerView.Adapter<CategoriiAdapter.View
             numecategorie.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View v) {
-
+                    Intent i = new Intent(context, ProduseActivity.class);
+                    i.putExtra("clasa",numecategorie.getText());
+                    context.startActivity(i);
                 }
             });
         }

@@ -6,7 +6,8 @@ package ro.duoline.agenti;
 
 public class ProduseValues {
     private int codProdus, stoc, rezervata, tva;
-    private String clasa, denumire, um;
+    private int comandate = 0;
+    private String denumire, um;
     private float pret_livr;
 
 
@@ -22,10 +23,10 @@ public class ProduseValues {
     public int getTva(){
         return tva;
     }
-
-    public String getClasa(){
-        return clasa;
+    public int getComandate() {
+        return comandate;
     }
+
     public String getDenumire(){
         return denumire;
     }
@@ -41,6 +42,10 @@ public class ProduseValues {
         this.codProdus = codProdus;
     }
 
+    public void setComandate(int comandate) {
+        this.comandate = comandate;
+    }
+
     public void setStoc(int stoc) {
         this.stoc = stoc;
     }
@@ -53,9 +58,7 @@ public class ProduseValues {
         this.tva = tva;
     }
 
-    public void setClasa(String clasa) {
-        this.clasa = clasa;
-    }
+
 
     public void setDenumire(String denumire) {
         this.denumire = denumire;

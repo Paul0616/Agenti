@@ -40,6 +40,7 @@ public class CategoriiProduse extends AppCompatActivity {
         adapter = new CategoriiAdapter(this, controller.getCategoriiFiltrate(true, ""));
         layoutManager = new LinearLayoutManager(this);
         recyclerCategorii.setLayoutManager(layoutManager);
+        recyclerCategorii.addItemDecoration(new LineItemDecoration(this, null));
         recyclerCategorii.setAdapter(adapter);
 
         toateProduseleTextView.setOnClickListener(new View.OnClickListener() {

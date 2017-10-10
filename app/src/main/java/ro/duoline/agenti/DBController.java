@@ -17,7 +17,7 @@ import java.util.List;
 
 public class DBController extends SQLiteOpenHelper {
     public DBController(Context applicationcontext){
-        super(applicationcontext, "test.db", null, 4);
+        super(applicationcontext, "test.db", null, 5);
     }
 
     //Create Table
@@ -29,7 +29,7 @@ public class DBController extends SQLiteOpenHelper {
         db.execSQL(query);
         query = "CREATE TABLE acces (ID INTEGER PRIMARY KEY AUTOINCREMENT, id_gestiune INTEGER, user TEXT, parola TEXT, cod_gestiune TEXT, nr_gestiune INTEGER, nume_gestiune TEXT, debit TEXT, pozitie_pret INTEGER)";
         db.execSQL(query);
-        query = "CREATE TABLE produse (ID INTEGER PRIMARY KEY AUTOINCREMENT, cod INTEGER, stoc INTEGER, rezervata INTEGER, clasa TEXT, denumire TEXT, um TEXT, tva INTEGER, pret_livr REAL)";
+        query = "CREATE TABLE produse (ID INTEGER PRIMARY KEY AUTOINCREMENT, cod INTEGER, stoc INTEGER, rezervata INTEGER, clasa TEXT, denumire TEXT, um TEXT, tva INTEGER, pret_livr REAL, comandate INTEGER)";
         db.execSQL(query);
     }
 
@@ -186,10 +186,35 @@ public class DBController extends SQLiteOpenHelper {
         return nrproduse;
     }
 
-    synchronized public List<ProduseValues> getProduse(){
+    synchronized public List<ProduseValues> getProduse(Boolean all, String filtru, String clasa){
         List<ProduseValues> data = new ArrayList<ProduseValues>();
         ProduseValues pv;
         String selectQuery = "SELECT * FROM produse";
+        if(all && !filtru.isEmpty() && clasa.isEmpty()){
+            selectQuery = "SELECT * FROM produse WHERE denumire LIKE '%"+filtru+"%'";
+        }
+        if(!all && !filtru.isEmpty() && clasa.isEmpty()){
+            selectQuery = "SELECT * FROM produse WHERE stoc <> 0 AND denumire LIKE '%"+filtru+"%'";
+        }
+        if(all && filtru.isEmpty() && clasa.isEmpty()){
+            selectQuery = "SELECT * FROM produse";
+        }
+        if(!all && filtru.isEmpty() && clasa.isEmpty()){
+            selectQuery = "SELECT * FROM produse WHERE stoc <> 0";
+        }
+        if(all && !filtru.isEmpty() && !clasa.isEmpty()){
+            selectQuery = "SELECT * FROM produse WHERE denumire LIKE '%"+filtru+"%' AND clasa = '"+clasa+"'";
+        }
+        if(!all && !filtru.isEmpty() && !clasa.isEmpty()){
+            selectQuery = "SELECT * FROM produse WHERE stoc <> 0 AND denumire LIKE '%"+filtru+"%' AND clasa = '"+clasa+"'";
+        }
+        if(all && filtru.isEmpty() && !clasa.isEmpty()){
+            selectQuery = "SELECT * FROM produse WHERE clasa = '"+clasa+"'";
+        }
+        if(!all && filtru.isEmpty() && !clasa.isEmpty()){
+            selectQuery = "SELECT * FROM produse WHERE stoc <> 0 AND clasa = '"+clasa+"'";
+        }
+
         SQLiteDatabase database = this.getWritableDatabase();
         Cursor cursor = database.rawQuery(selectQuery, null);
         cursor.moveToFirst();
