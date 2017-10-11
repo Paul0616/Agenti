@@ -23,7 +23,9 @@
             android:parentActivityName=".MainActivity" />
         <activity
             android:name=".ProduseActivity"
-            android:parentActivityName=".CategoriiProduse"/>
+            android:parentActivityName=".CategoriiProduse" />
+        <activity android:name=".CosActivity"
+            android:parentActivityName=".ProduseActivity" />
     </application>
 
 </manifest>

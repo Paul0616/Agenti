@@ -32,19 +32,34 @@
             android:textOff="PRODUSE CU STOC ZERO ELIMINATE"
             android:textOn="TOATE PRODUSELE DIN CATEGORIE" />
 
-        <EditText
-            android:id="@+id/editTextFiltru1"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:ems="10"
-            android:hint="filtrare produse"
-            android:inputType="textPersonName"
-            android:textColor="@color/colorComanda" />
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/editTextFiltru1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:ems="10"
+                android:hint="filtrare produse"
+                android:inputType="textPersonName"
+                android:textColor="@color/colorComanda" />
+
+            <Button
+                android:id="@+id/buttonCos"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:text="vezi cos produse"
+                android:textSize="10sp" />
+        </LinearLayout>
 
     </LinearLayout>
 

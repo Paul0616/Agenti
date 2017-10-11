@@ -1,14 +1,20 @@
 package ro.duoline.agenti;
 
+
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.ColorMatrixColorFilter;
+
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
+
+import android.view.View;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ToggleButton;
@@ -22,12 +28,16 @@ public class ProduseActivity extends AppCompatActivity {
     private EditText editTextFiltru;
     private String clasa = "";
     DBController controller = new DBController(this);
+    private Button btnCos;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_produse);
         clasa = getIntent().getStringExtra("clasa");
+        if(clasa == null) clasa = "";
         if(clasa.isEmpty()) {
             this.setTitle("Toate Produsele");
         } else {
@@ -35,8 +45,9 @@ public class ProduseActivity extends AppCompatActivity {
         }
         recyclerProduse = (RecyclerView) findViewById(R.id.recycler_produse);
         tglBtn = (ToggleButton) findViewById(R.id.toggleButton3);
+        btnCos = (Button) findViewById(R.id.buttonCos);
         editTextFiltru = (EditText) findViewById(R.id.editTextFiltru1);
-        adapter = new ProduseAdapter(this, controller.getProduse(true, "", clasa));
+        adapter = new ProduseAdapter(this, controller.getProduse(true, "", clasa), controller);
         layoutManager = new LinearLayoutManager(this);
         recyclerProduse.setLayoutManager(layoutManager);
         int iColor = Color.parseColor("#cdcdcd");
@@ -53,13 +64,18 @@ public class ProduseActivity extends AppCompatActivity {
 
         recyclerProduse.addItemDecoration(new LineItemDecoration(this, colorFilter));
         recyclerProduse.setAdapter(adapter);
-
+        btnCos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(getBaseContext(), CosActivity.class);
+                startActivity(i);
+            }
+        });
         tglBtn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 adapter.setValues(controller.getProduse(isChecked, editTextFiltru.getText().toString(), clasa));
                 adapter.notifyDataSetChanged();
-              //  totalProduseTextView.setText(Integer.toString(controller.getNrProduse(getBaseContext(), isChecked)));
             }
         });
 
@@ -80,5 +96,9 @@ public class ProduseActivity extends AppCompatActivity {
                 adapter.notifyDataSetChanged();
             }
         });
+
+
     }
+
+
 }
