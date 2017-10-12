@@ -17,7 +17,7 @@ import java.util.List;
 
 public class DBController extends SQLiteOpenHelper {
     public DBController(Context applicationcontext){
-        super(applicationcontext, "test.db", null, 6);
+        super(applicationcontext, "test.db", null, 7);
     }
 
     //Create Table
@@ -27,11 +27,13 @@ public class DBController extends SQLiteOpenHelper {
         String query;
         query = "CREATE TABLE db_list (ID INTEGER PRIMARY KEY AUTOINCREMENT, firma TEXT, ip TEXT, nume_DB TEXT, user_DB TEXT, pass_DB TEXT)";
         db.execSQL(query);
-        query = "CREATE TABLE acces (ID INTEGER PRIMARY KEY AUTOINCREMENT, id_gestiune INTEGER, user TEXT, parola TEXT, cod_gestiune TEXT, nr_gestiune INTEGER, nume_gestiune TEXT, debit TEXT, pozitie_pret INTEGER)";
+        query = "CREATE TABLE acces (ID INTEGER PRIMARY KEY AUTOINCREMENT, id_gestiune INTEGER, user TEXT, parola TEXT, cod_gestiune TEXT, nr_gestiune INTEGER, nume_gestiune TEXT, debit TEXT, pozitie_pret INTEGER, nr_proforme INTEGER, nr_proformef INTEGER)";
         db.execSQL(query);
         query = "CREATE TABLE produse (ID INTEGER PRIMARY KEY AUTOINCREMENT, cod INTEGER, stoc INTEGER, rezervata INTEGER, clasa TEXT, denumire TEXT, um TEXT, tva INTEGER, pret_livr REAL)";
         db.execSQL(query);
         query = "CREATE TABLE cos (ID INTEGER PRIMARY KEY AUTOINCREMENT, cod INTEGER, comandate INTEGER)";
+        db.execSQL(query);
+        query = "CREATE TABLE parteneri (ID INTEGER PRIMARY KEY AUTOINCREMENT, denumire INTEGER, cod_fiscal REAL, CODTARA TEXT)";
         db.execSQL(query);
     }
 
@@ -45,6 +47,8 @@ public class DBController extends SQLiteOpenHelper {
         query = "DROP TABLE IF EXISTS produse";
         db.execSQL(query);
         query = "DROP TABLE IF EXISTS cos";
+        db.execSQL(query);
+        query = "DROP TABLE IF EXISTS parteneri";
         db.execSQL(query);
         onCreate(db);
     }
@@ -81,6 +85,8 @@ public class DBController extends SQLiteOpenHelper {
         values.put("nume_gestiune", queryValues.get("nume_gestiune"));
         values.put("debit", queryValues.get("debit"));
         values.put("pozitie_pret", queryValuesInt.get("pozitie_pret"));
+        values.put("nr_proforme", queryValuesInt.get("nr_proforme"));
+        values.put("nr_proformef", queryValuesInt.get("nr_proformef"));
         database.insert("acces", null, values);
         database.close();
 
@@ -104,6 +110,16 @@ public class DBController extends SQLiteOpenHelper {
 
 
 
+    }
+
+    /* Insert PARTENERI in database */
+    public void insertParteneri(HashMap<String, String> queryValues, HashMap<String, Double> queryValuesFloat, SQLiteDatabase database){
+
+        ContentValues values = new ContentValues();
+        values.put("denumire", queryValues.get("denumire"));
+        values.put("codtara", queryValues.get("codtara"));
+        values.put("cod_fiscal", queryValuesFloat.get("cod_fiscal"));
+        database.insert("parteneri", null, values);
     }
 
     public Boolean isFirmaInDB(String firm){
@@ -277,7 +293,7 @@ public class DBController extends SQLiteOpenHelper {
     synchronized public List<ProduseValues> getCos(){
         List<ProduseValues> data = new ArrayList<ProduseValues>();
         ProduseValues pv;
-        String selectQuery = "SELECT cos.comandate AS comandate, cos.cod AS cod, produse.denumire AS denumire, produse.um AS um, produse.tva AS tva, produse.pret_livr AS pret_livr FROM cos ";
+        String selectQuery = "SELECT cos.comandate AS comandate, cos.cod AS cod, produse.denumire AS denumire, produse.stoc AS stoc, produse.rezervata AS rezervata, produse.um AS um, produse.tva AS tva, produse.pret_livr AS pret_livr FROM cos ";
         String selectCos = "LEFT OUTER JOIN produse ON cos.cod = produse.cod ";
         selectQuery = selectQuery + selectCos;
 
@@ -292,6 +308,8 @@ public class DBController extends SQLiteOpenHelper {
             pv.setCodProdus(cursor.getInt(cursor.getColumnIndex("cod")));
             pv.setTva(cursor.getInt(cursor.getColumnIndex("tva")));
             pv.setPret_livr(cursor.getFloat(cursor.getColumnIndex("pret_livr")));
+            pv.setStoc(cursor.getInt(cursor.getColumnIndex("stoc")));
+            pv.setRezervata(cursor.getInt(cursor.getColumnIndex("rezervata")));
             pv.setComandate(cursor.getInt(cursor.getColumnIndex("comandate")));
             data.add(pv);
             cursor.moveToNext();

@@ -88,7 +88,7 @@ public class CosAdapter extends RecyclerView.Adapter<CosAdapter.ViewHolder>{
         } else {
             holder.fundalComanda.setVisibility(View.INVISIBLE);
         }
-        if(produseValues.get(position).getComandate() >= produseValues.get(position).getStoc()){
+        if(produseValues.get(position).getComandate() >= (produseValues.get(position).getStoc() - produseValues.get(position).getRezervata())){
             holder.fundalComanda.setBackgroundColor(ContextCompat.getColor(context,R.color.colorComanda));
         } else {
             holder.fundalComanda.setBackgroundColor(ContextCompat.getColor(context,R.color.colorFacturi));
@@ -118,6 +118,48 @@ public class CosAdapter extends RecyclerView.Adapter<CosAdapter.ViewHolder>{
             butonPlus = (Button) view.findViewById(R.id.buttonPlusCos);
             butonMinus = (Button) view.findViewById(R.id.buttonMinusCos);
 
+            butonPlus.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int comandate = produseValues.get(getAdapterPosition()).getComandate() + 1;
+                    produseValues.get(getAdapterPosition()).setComandate(comandate);
+                    controller.setProdusComandat(produseValues.get(getAdapterPosition()).getCodProdus(), comandate);
+                    if(produseValues.get(getAdapterPosition()).getComandate() > 0){
+                        fundalComanda.setVisibility(View.VISIBLE);
+                        if(produseValues.get(getAdapterPosition()).getComandate() >= (produseValues.get(getAdapterPosition()).getStoc() - produseValues.get(getAdapterPosition()).getRezervata())){
+                            fundalComanda.setBackgroundColor(ContextCompat.getColor(context,R.color.colorComanda));
+                        } else {
+                            fundalComanda.setBackgroundColor(ContextCompat.getColor(context,R.color.colorFacturi));
+                        }
+                        mInstance.setTotal();
+                        notifyDataSetChanged();
+                    }
+
+                }
+            });
+            butonMinus.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int comandate = produseValues.get(getAdapterPosition()).getComandate() - 1;
+                    if(comandate >= 0) {
+                        produseValues.get(getAdapterPosition()).setComandate(comandate);
+                        controller.setProdusComandat(produseValues.get(getAdapterPosition()).getCodProdus(), comandate);
+                    }
+                    if(produseValues.get(getAdapterPosition()).getComandate() > 0){
+                        fundalComanda.setVisibility(View.VISIBLE);
+                    }
+                    if(produseValues.get(getAdapterPosition()).getComandate() == 0){
+                        fundalComanda.setVisibility(View.INVISIBLE);
+                    }
+                    if(produseValues.get(getAdapterPosition()).getComandate() >= (produseValues.get(getAdapterPosition()).getStoc() - produseValues.get(getAdapterPosition()).getRezervata())){
+                        fundalComanda.setBackgroundColor(ContextCompat.getColor(context,R.color.colorComanda));
+                    } else {
+                        fundalComanda.setBackgroundColor(ContextCompat.getColor(context,R.color.colorFacturi));
+                    }
+                    mInstance.setTotal();
+                    notifyDataSetChanged();
+                }
+            });
 
         }
     }

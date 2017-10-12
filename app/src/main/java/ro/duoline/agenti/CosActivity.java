@@ -36,7 +36,7 @@ public class CosActivity extends AppCompatActivity implements RecyclerItemTouchH
 
 
         total = (TextView) findViewById(R.id.textViewTotal);
-        total.setText("Total: "+Float.toString(calculTotal())+" lei");
+        setTotal();
         adapter = new CosAdapter(this, listaCos, controller, this);
         layoutManager = new LinearLayoutManager(this);
         recyclerCos.setLayoutManager(layoutManager);
@@ -67,6 +67,9 @@ public class CosActivity extends AppCompatActivity implements RecyclerItemTouchH
         }
     }
 
+    public void setTotal(){
+        total.setText("Total: "+Float.toString(calculTotal())+" lei");
+    }
     @Override
     protected void onResume() {
         super.onResume();

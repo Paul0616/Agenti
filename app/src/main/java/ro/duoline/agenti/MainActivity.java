@@ -59,11 +59,15 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private static final int FIRME_LOADER_ID = 33;
     private static final int USERI_LOADER_ID = 34;
     private static final int PRODUSE_LOADER_ID = 35;
+    private static final int PARTENERI_LOADER_ID = 36;
     private final static String FIRME_URL_BASE = "http://www.contliv.eu/agentiAplicatie";
     private final static String FIRME_FILE_PHP_QUERY = "getFirme.php";
     private final static String USERI_FILE_PHP_QUERY = "getUseri.php";
     private final static String PRODUSE_FILE_PHP_QUERY = "getProduse.php";
+    private final static String PARTENERI_FILE_PHP_QUERY = "getParteneri.php";
     private JSONArray jArray; //contine lista cu toate firmele si datele de conectare la Bazele lor de Date
+    private Boolean produseLoaded = false;
+    private Boolean parteneriLoaded = false;
 
     DBController controller = new DBController(this);
 
@@ -80,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         butoane = new ArrayList<>();
 
         pd = new ProgressDialog(this);
-        pd.setMessage("Se incarca stocurile de pe server...");
+        pd.setMessage("Se incarca stocurile si lista de clienti de pe server...");
         pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.floatingActionButton);
         fab.setOnClickListener(new View.OnClickListener(){
@@ -108,6 +112,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                             @Override
                             public void onClick(View v) {
                                 String dateconectare = controller.getDateConectare(PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("FIRMA", "Agenti"));
+                                produseLoaded = false;
+                                parteneriLoaded = false;
                                 loadProduse(dateconectare, PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("DEBIT", ""));
                             }
                         }).show();
@@ -233,6 +239,14 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     }
 
+    public void loadParteneri(){
+        String dateconectare = controller.getDateConectare(PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("FIRMA", "Agenti"));
+        String[] param = new String[1];
+        param[0] = dateconectare;
+        makeURLConnection(makeURL(FIRME_URL_BASE, PARTENERI_FILE_PHP_QUERY, param), PARTENERI_LOADER_ID);
+
+    }
+
     public void loadAcces(String dateconectare){
         String[] param = new String[1];
         param[0] = dateconectare;
@@ -280,37 +294,37 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     private void listCreate(Context context){
         ButoaneMeniuPrincipal btn = new ButoaneMeniuPrincipal();
-        btn.setCuloareButon(context.getColor(R.color.colorComanda));
+        btn.setCuloareButon(ContextCompat.getColor(context, R.color.colorComanda));
         btn.setTextButon("COMANDA");
         btn.setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_action_name));
         butoane.add(btn);
         btn = new ButoaneMeniuPrincipal();
-        btn.setCuloareButon(context.getColor(R.color.colorScanare));
+        btn.setCuloareButon(ContextCompat.getColor(context, R.color.colorScanare));
         btn.setTextButon("SCANARE / INVENTARIERE");
         btn.setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_scan));
         butoane.add(btn);
         btn = new ButoaneMeniuPrincipal();
-        btn.setCuloareButon(context.getColor(R.color.colorSalvate));
+        btn.setCuloareButon(ContextCompat.getColor(context, R.color.colorSalvate));
         btn.setTextButon("PROFORME SALVATE");
         btn.setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_salvate));
         butoane.add(btn);
         btn = new ButoaneMeniuPrincipal();
-        btn.setCuloareButon(context.getColor(R.color.colorProforme));
+        btn.setCuloareButon(ContextCompat.getColor(context, R.color.colorProforme));
         btn.setTextButon("PROFORME");
         btn.setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_proforme));
         butoane.add(btn);
         btn = new ButoaneMeniuPrincipal();
-        btn.setCuloareButon(context.getColor(R.color.colorFacturi));
+        btn.setCuloareButon(ContextCompat.getColor(context, R.color.colorFacturi));
         btn.setTextButon("FACTURI");
         btn.setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_facturi));
         butoane.add(btn);
         btn = new ButoaneMeniuPrincipal();
-        btn.setCuloareButon(context.getColor(R.color.colorMemo));
+        btn.setCuloareButon(ContextCompat.getColor(context, R.color.colorMemo));
         btn.setTextButon("MEMO");
         btn.setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_memo));
         butoane.add(btn);
         btn = new ButoaneMeniuPrincipal();
-        btn.setCuloareButon(context.getColor(R.color.colorDeconectare));
+        btn.setCuloareButon(ContextCompat.getColor(context, R.color.colorDeconectare));
         btn.setTextButon("DECONECTARE");
         btn.setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_deconectare));
         butoane.add(btn);
@@ -415,6 +429,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                         queryValuesInt.put("id_gestiune", jArray.getJSONObject(i).getInt("id_gestiune"));
                         queryValuesInt.put("nr_gestiune", jArray.getJSONObject(i).getInt("nr_gestiune"));
                         queryValuesInt.put("pozitie_pret", jArray.getJSONObject(i).getInt("pozitie_pret"));
+                        queryValuesInt.put("nr_proforme", jArray.getJSONObject(i).getInt("nr_proforme"));
+                        queryValuesInt.put("nr_proformef", jArray.getJSONObject(i).getInt("nr_proformef"));
                         controller.insertUseri(queryValuesString, queryValuesInt);
                     }
                     tes();
@@ -428,12 +444,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                  if (data != null) {
                      jProduse = new JSONArray(data);
                      controller.deleteAllRecords("produse");
-                     //pd.dismiss();
-                    // pd = new ProgressDialog(context);
-                    // pd.setMessage("Se salveaza stocurile in telefon...");
-                     //pd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-                    // pd.setMax(jProduse.length());
-                     //pd.show();
+
                      SQLiteDatabase db = controller.getWritableDatabase();
                      db.beginTransaction();
                      try {
@@ -459,22 +470,60 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                          db.setTransactionSuccessful();
                      } finally {
                          db.endTransaction();
+                         produseLoaded = true;
                      }
                      db.close();
-                     long milis = Calendar.getInstance().getTimeInMillis() - datestart;
-                     pd.dismiss();
-                     Toast.makeText(context, Integer.toString(jProduse.length()) + " produse actualizate in " + Long.toString(milis) + "ms", Toast.LENGTH_LONG).show();
+
                  } else {
                      Toast.makeText(context, "Verifica conexiunea de internet. Pentru logare este necesara...", Toast.LENGTH_LONG).show();
                  }
-                // {
-                //
-                //
-                // }
-               //  } else {
 
-               //  }
             }
+
+            if (loader.getId() == PARTENERI_LOADER_ID) {
+                JSONArray jProduse = null;
+                if (data != null) {
+                    jProduse = new JSONArray(data);
+                    controller.deleteAllRecords("parteneri");
+
+                    SQLiteDatabase db = controller.getWritableDatabase();
+                    db.beginTransaction();
+                    try {
+                        for (int i = 0; i < jProduse.length(); i++) {
+                            HashMap<String, String> queryValuesString = new HashMap<String, String>();
+                            queryValuesString.put("denumire", jProduse.getJSONObject(i).getString("denumire").toString());
+                            queryValuesString.put("codtara", jProduse.getJSONObject(i).getString("codtara").toString());
+
+                            HashMap<String, Double> queryValuesFloat = new HashMap<String, Double>();
+                            queryValuesFloat.put("cod_fiscal", jProduse.getJSONObject(i).getDouble("cod_fiscal"));
+
+
+                            controller.insertParteneri(queryValuesString, queryValuesFloat, db);
+
+                        }
+                        db.setTransactionSuccessful();
+                    } finally {
+                        db.endTransaction();
+                        parteneriLoaded = true;
+                    }
+                    db.close();
+
+                } else {
+                    Toast.makeText(context, "Verifica conexiunea de internet. Pentru logare este necesara...", Toast.LENGTH_LONG).show();
+                }
+
+            }
+            if(produseLoaded){
+                loadParteneri();
+            }
+            if(parteneriLoaded && produseLoaded) {
+                long milis = Calendar.getInstance().getTimeInMillis() - datestart;
+                pd.dismiss();
+                Toast.makeText(context, "Baza de date actualizata in " + Long.toString(milis) + "ms", Toast.LENGTH_LONG).show();
+                parteneriLoaded = false;
+                produseLoaded = false;
+            }
+
         }catch (JSONException e) {
             e.printStackTrace();
 
