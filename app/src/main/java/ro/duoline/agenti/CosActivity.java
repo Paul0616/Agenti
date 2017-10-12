@@ -1,5 +1,6 @@
 package ro.duoline.agenti;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.ColorMatrixColorFilter;
@@ -9,6 +10,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -23,6 +25,7 @@ public class CosActivity extends AppCompatActivity implements RecyclerItemTouchH
     private CosAdapter adapter;
     private List<ProduseValues> listaCos;
     private LinearLayout cosgol;
+    private Button bParteneri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +35,7 @@ public class CosActivity extends AppCompatActivity implements RecyclerItemTouchH
         controller.deleteZeroValuesfromCos();
         cosgol = (LinearLayout) findViewById(R.id.linearLayoutCosGol);
         recyclerCos = (RecyclerView) findViewById(R.id.recyclerCos);
+        bParteneri = (Button) findViewById(R.id.buttonParteneri);
         listaCos = controller.getCos();
 
 
@@ -57,19 +61,29 @@ public class CosActivity extends AppCompatActivity implements RecyclerItemTouchH
 
         ItemTouchHelper.SimpleCallback itemTouchHelperCallBack = new RecyclerItemTouchHelper(0, ItemTouchHelper.RIGHT, this);
         new ItemTouchHelper(itemTouchHelperCallBack).attachToRecyclerView(recyclerCos);
+        bParteneri.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(getBaseContext(), Parteneri.class);
+                startActivity(i);
+            }
+        });
     }
 
     public void setupCosGol(){
         if (listaCos.size() == 0){
             cosgol.setVisibility(View.VISIBLE);
+            bParteneri.setVisibility(View.INVISIBLE);
         } else {
             cosgol.setVisibility(View.INVISIBLE);
+            bParteneri.setVisibility(View.VISIBLE);
         }
     }
 
     public void setTotal(){
         total.setText("Total: "+Float.toString(calculTotal())+" lei");
     }
+
     @Override
     protected void onResume() {
         super.onResume();

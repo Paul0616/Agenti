@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     android:background="@android:color/transparent"
     android:orientation="horizontal"
-    android:padding="8dp">
+    android:padding="16dp">
 
     <RelativeLayout
         android:layout_width="25dp"
@@ -42,7 +42,7 @@
         android:layout_marginRight="8dp"
         android:layout_marginStart="20dp"
         android:layout_weight="1"
-        android:gravity="center_vertical"
+        android:gravity="center_vertical|end"
         android:text="COMANDA"
         android:textColor="@android:color/background_light"
         android:textSize="18sp" />
@@ -55,7 +55,6 @@
         android:layout_weight="0.1"
         android:gravity="center_vertical"
         android:text="1450"
-        android:textAlignment="textEnd"
         android:textColor="@android:color/background_light"
         android:textSize="10sp" />
 </LinearLayout>

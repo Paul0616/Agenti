@@ -17,7 +17,7 @@ import java.util.List;
 
 public class DBController extends SQLiteOpenHelper {
     public DBController(Context applicationcontext){
-        super(applicationcontext, "test.db", null, 7);
+        super(applicationcontext, "test.db", null, 9);
     }
 
     //Create Table
@@ -31,9 +31,9 @@ public class DBController extends SQLiteOpenHelper {
         db.execSQL(query);
         query = "CREATE TABLE produse (ID INTEGER PRIMARY KEY AUTOINCREMENT, cod INTEGER, stoc INTEGER, rezervata INTEGER, clasa TEXT, denumire TEXT, um TEXT, tva INTEGER, pret_livr REAL)";
         db.execSQL(query);
-        query = "CREATE TABLE cos (ID INTEGER PRIMARY KEY AUTOINCREMENT, cod INTEGER, comandate INTEGER)";
+        query = "CREATE TABLE cos (ID INTEGER PRIMARY KEY AUTOINCREMENT, cod INTEGER, comandate INTEGER, cod_fiscal REAL)";
         db.execSQL(query);
-        query = "CREATE TABLE parteneri (ID INTEGER PRIMARY KEY AUTOINCREMENT, denumire INTEGER, cod_fiscal REAL, CODTARA TEXT)";
+        query = "CREATE TABLE parteneri (ID INTEGER PRIMARY KEY AUTOINCREMENT, denumire INTEGER, cod_fiscal REAL, codtara TEXT)";
         db.execSQL(query);
     }
 
@@ -202,6 +202,12 @@ public class DBController extends SQLiteOpenHelper {
         database.close();
     }
 
+    synchronized public void setCod_FiscalForCos(float cod_fiscal){
+        SQLiteDatabase database = this.getWritableDatabase();
+        String[] args = new String[]{Float.toString(cod_fiscal)};
+        database.rawQuery("UPDATE cos SET cod_fiscal = ?", args);
+        database.close();
+    }
 
     synchronized public void setProdusComandat(int codProdus, int comanda){
         SQLiteDatabase database = this.getWritableDatabase();
@@ -237,6 +243,30 @@ public class DBController extends SQLiteOpenHelper {
         int nrproduse = cursor.getCount();
         database.close();
         return nrproduse;
+    }
+
+    synchronized public  List<ParteneriValues> getParteneri(String filtru){
+       List<ParteneriValues> data = new ArrayList<ParteneriValues>();
+        ParteneriValues pv;
+        String sql;
+        if(filtru.isEmpty()) {
+            sql = "SELECT * FROM parteneri";
+        } else {
+            sql = "SELECT * FROM parteneri WHERE denumire LIKE '%"+filtru+"%'";
+        }
+        SQLiteDatabase database = this.getReadableDatabase();
+        Cursor cursor = database.rawQuery(sql, null);
+        cursor.moveToFirst();
+        while(!cursor.isAfterLast()){
+            pv = new ParteneriValues();
+            pv.setDenumire(cursor.getString(cursor.getColumnIndex("denumire")));
+            pv.setCodtara(cursor.getString(cursor.getColumnIndex("codtara")));
+            pv.setCod_fiscal(cursor.getFloat(cursor.getColumnIndex("cod_fiscal")));
+            data.add(pv);
+            cursor.moveToNext();
+        }
+        database.close();
+        return data;
     }
 
     synchronized public List<ProduseValues> getProduse(Boolean all, String filtru, String clasa){
