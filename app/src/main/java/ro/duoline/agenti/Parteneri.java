@@ -1,6 +1,7 @@
 package ro.duoline.agenti;
 
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.ColorMatrixColorFilter;
@@ -59,6 +60,8 @@ public class Parteneri extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 controller.setCod_FiscalForCos(cod_fiscalSelectat);
+                Intent i = new Intent(getBaseContext(), ProformaView.class);
+                startActivity(i);
             }
         });
 

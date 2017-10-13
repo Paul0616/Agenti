@@ -136,6 +136,16 @@ public class DBController extends SQLiteOpenHelper {
     }
 
 
+    public String getClientFromCos(){
+        String selectQuery = "SELECT cos.cod_fiscal AS cod_fiscal, parteneri.denumire AS denumire FROM cos INNER JOIN parteneri ON cos.cod_fiscal = parteneri.cod_fiscal";
+        SQLiteDatabase database = this.getReadableDatabase();
+        Cursor cursor = database.rawQuery(selectQuery, null);
+        cursor.moveToFirst();
+        String denumire = cursor.getString(cursor.getColumnIndex("denumire"));
+        Float cod_fiscal = cursor.getFloat(cursor.getColumnIndex("cod_fiscal"));
+        database.close();
+        return denumire;
+    }
 
     public Boolean isUserValid(String user, String pass){
         //String sel = "SELECT * FROM acces";
@@ -204,8 +214,10 @@ public class DBController extends SQLiteOpenHelper {
 
     synchronized public void setCod_FiscalForCos(float cod_fiscal){
         SQLiteDatabase database = this.getWritableDatabase();
-        String[] args = new String[]{Float.toString(cod_fiscal)};
-        database.rawQuery("UPDATE cos SET cod_fiscal = ?", args);
+        ContentValues values = new ContentValues();
+        values.put("cod_fiscal", cod_fiscal);
+        //String[] args = new String[]{Float.toString(cod_fiscal)};
+        database.update("cos", values, null, null);
         database.close();
     }
 

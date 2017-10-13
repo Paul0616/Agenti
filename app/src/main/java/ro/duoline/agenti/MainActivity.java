@@ -282,7 +282,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         } else {
             bultUri = Uri.parse(base).buildUpon().appendPath(file).build();
         }
-        URL queryURL = null;
+        URL queryURL;
         try {
             queryURL = new URL(bultUri.toString());
             return queryURL;
