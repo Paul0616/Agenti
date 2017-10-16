@@ -41,7 +41,7 @@ public class CosActivity extends AppCompatActivity implements RecyclerItemTouchH
 
         total = (TextView) findViewById(R.id.textViewTotal);
         setTotal();
-        adapter = new CosAdapter(this, listaCos, controller, this);
+        adapter = new CosAdapter(this, listaCos, controller, this, 1);
         layoutManager = new LinearLayoutManager(this);
         recyclerCos.setLayoutManager(layoutManager);
         int iColor = Color.parseColor("#999999");

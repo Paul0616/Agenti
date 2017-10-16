@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.widget.Toast;
 
 
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ import java.util.List;
 
 public class DBController extends SQLiteOpenHelper {
     public DBController(Context applicationcontext){
-        super(applicationcontext, "test.db", null, 9);
+        super(applicationcontext, "test.db", null, 10);
     }
 
     //Create Table
@@ -31,9 +32,9 @@ public class DBController extends SQLiteOpenHelper {
         db.execSQL(query);
         query = "CREATE TABLE produse (ID INTEGER PRIMARY KEY AUTOINCREMENT, cod INTEGER, stoc INTEGER, rezervata INTEGER, clasa TEXT, denumire TEXT, um TEXT, tva INTEGER, pret_livr REAL)";
         db.execSQL(query);
-        query = "CREATE TABLE cos (ID INTEGER PRIMARY KEY AUTOINCREMENT, cod INTEGER, comandate INTEGER, cod_fiscal REAL)";
+        query = "CREATE TABLE cos (ID INTEGER PRIMARY KEY AUTOINCREMENT, cod INTEGER, comandate INTEGER, cod_fiscal TEXT)";
         db.execSQL(query);
-        query = "CREATE TABLE parteneri (ID INTEGER PRIMARY KEY AUTOINCREMENT, denumire INTEGER, cod_fiscal REAL, codtara TEXT)";
+        query = "CREATE TABLE parteneri (ID INTEGER PRIMARY KEY AUTOINCREMENT, denumire INTEGER, cod_fiscal TEXT, codtara TEXT)";
         db.execSQL(query);
     }
 
@@ -113,12 +114,12 @@ public class DBController extends SQLiteOpenHelper {
     }
 
     /* Insert PARTENERI in database */
-    public void insertParteneri(HashMap<String, String> queryValues, HashMap<String, Double> queryValuesFloat, SQLiteDatabase database){
+    public void insertParteneri(HashMap<String, String> queryValues, SQLiteDatabase database){
 
         ContentValues values = new ContentValues();
         values.put("denumire", queryValues.get("denumire"));
         values.put("codtara", queryValues.get("codtara"));
-        values.put("cod_fiscal", queryValuesFloat.get("cod_fiscal"));
+        values.put("cod_fiscal", queryValues.get("cod_fiscal"));
         database.insert("parteneri", null, values);
     }
 
@@ -142,7 +143,7 @@ public class DBController extends SQLiteOpenHelper {
         Cursor cursor = database.rawQuery(selectQuery, null);
         cursor.moveToFirst();
         String denumire = cursor.getString(cursor.getColumnIndex("denumire"));
-        Float cod_fiscal = cursor.getFloat(cursor.getColumnIndex("cod_fiscal"));
+        String cod_fiscal = cursor.getString(cursor.getColumnIndex("cod_fiscal"));
         database.close();
         return denumire;
     }
@@ -212,12 +213,19 @@ public class DBController extends SQLiteOpenHelper {
         database.close();
     }
 
-    synchronized public void setCod_FiscalForCos(float cod_fiscal){
+    synchronized public void setCod_FiscalForCos(String cod_fiscal){
         SQLiteDatabase database = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("cod_fiscal", cod_fiscal);
         //String[] args = new String[]{Float.toString(cod_fiscal)};
         database.update("cos", values, null, null);
+       // Cursor cursor = database.rawQuery("SELECT cod_fiscal FROM cos", null);
+    //    cursor.moveToFirst();
+    //    while(!cursor.isAfterLast()){
+   //         float f = cursor.getFloat(cursor.getColumnIndex("cod_fiscal"));
+   //         String fstring = Float.toString(f);
+   //         cursor.moveToNext();
+  //      }
         database.close();
     }
 
@@ -273,7 +281,7 @@ public class DBController extends SQLiteOpenHelper {
             pv = new ParteneriValues();
             pv.setDenumire(cursor.getString(cursor.getColumnIndex("denumire")));
             pv.setCodtara(cursor.getString(cursor.getColumnIndex("codtara")));
-            pv.setCod_fiscal(cursor.getFloat(cursor.getColumnIndex("cod_fiscal")));
+            pv.setCod_fiscal(cursor.getString(cursor.getColumnIndex("cod_fiscal")));
             data.add(pv);
             cursor.moveToNext();
         }

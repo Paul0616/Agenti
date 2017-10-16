@@ -493,12 +493,10 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                             HashMap<String, String> queryValuesString = new HashMap<String, String>();
                             queryValuesString.put("denumire", jProduse.getJSONObject(i).getString("denumire").toString());
                             queryValuesString.put("codtara", jProduse.getJSONObject(i).getString("codtara").toString());
-
-                            HashMap<String, Double> queryValuesFloat = new HashMap<String, Double>();
-                            queryValuesFloat.put("cod_fiscal", jProduse.getJSONObject(i).getDouble("cod_fiscal"));
+                            queryValuesString.put("cod_fiscal", jProduse.getJSONObject(i).getString("cod_fiscal"));
 
 
-                            controller.insertParteneri(queryValuesString, queryValuesFloat, db);
+                            controller.insertParteneri(queryValuesString, db);
 
                         }
                         db.setTransactionSuccessful();

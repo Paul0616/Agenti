@@ -5,12 +5,12 @@ package ro.duoline.agenti;
  */
 
 public class ParteneriValues {
-    private float cod_fiscal;
+    private String cod_fiscal;
     private String denumire;
     private String codtara;
     private Boolean isSelected = false;
 
-    public float getCod_fiscal() {
+    public String getCod_fiscal() {
         return cod_fiscal;
     }
 
@@ -26,7 +26,7 @@ public class ParteneriValues {
         return isSelected;
     }
 
-    public void setCod_fiscal(float cod_fiscal) {
+    public void setCod_fiscal(String cod_fiscal) {
         this.cod_fiscal = cod_fiscal;
     }
 

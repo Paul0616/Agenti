@@ -2,7 +2,9 @@ package ro.duoline.agenti;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,32 +22,26 @@ import java.util.List;
  * Created by Paul on 10/11/2017.
  */
 
-public class CosAdapter extends RecyclerView.Adapter<CosAdapter.ViewHolder>{
+public class CosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 
     private List<ProduseValues> produseValues;
     private Context context;
     private DBController controller;
-    CosActivity mInstance;
+    AppCompatActivity mInstance;
+    private int type; //1 inseamna adapter pentru CosActivity si 2 inseamna adapter pentru ProformaViewActivity
 
-    public CosAdapter(Context context, List<ProduseValues> produseValues, DBController controller, CosActivity mInstance){
+    public CosAdapter(Context context, List<ProduseValues> produseValues, DBController controller, AppCompatActivity mInstance, int viewType){
         this.context = context;
         this.controller = controller;
         this.mInstance = mInstance;
+        this.type = viewType;
         setValues(produseValues);
     }
 
     public void setValues(List<ProduseValues> prosuseValues){
         this.produseValues = prosuseValues;
     }
-/*
-    public float calculTotal() {
-        float res = 0;
-        for(int i=0; i<felMeniu.size(); i++){
-            res += (felMeniu.get(i).getBucComandate() * felMeniu.get(i).getPret());
-        }
-        return round2(res, 2);
-    }
-  */
+
     public float round2(float number, int scale) {
         int pow = 10;
         for (int i = 1; i < scale; i++)
@@ -55,18 +51,25 @@ public class CosAdapter extends RecyclerView.Adapter<CosAdapter.ViewHolder>{
     }
 
     public void removeItem(int pos){
-
-
         controller.deleteItemfromCos(produseValues.get(pos).getCodProdus());
         produseValues.remove(pos);
         notifyItemRemoved(pos);
     }
 
+    @Override
+    public int getItemViewType(int position) {
+        return type;
+    }
 
     @Override
-    public CosAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_cos_layout,parent,false);
-        return new CosAdapter.ViewHolder(view);
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        if(viewType == 1) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_cos_layout, parent, false);
+            return new CosAdapter.ViewHolder(view);
+        } else {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_proformaview_layout, parent, false);
+            return new CosAdapter.ViewHolder1(view);
+        }
     }
 
     @Override
@@ -75,23 +78,35 @@ public class CosAdapter extends RecyclerView.Adapter<CosAdapter.ViewHolder>{
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.denumireProdusTextView.setText(produseValues.get(position).getDenumire());
-        holder.umTextView.setText(produseValues.get(position).getUm());
-        holder.tvaTextView.setText(Integer.toString(produseValues.get(position).getTva()));
-        holder.pretTextView.setText(Float.toString(produseValues.get(position).getPret_livr()));
-        holder.inCosTextView.setText(Integer.toString(produseValues.get(position).getComandate()));
-        Float f = produseValues.get(position).getPret_livr() * produseValues.get(position).getComandate();
-        holder.subtotalTextView.setText(Float.toString(round2(f,2)));
-        if(produseValues.get(position).getComandate() > 0) {
-            holder.fundalComanda.setVisibility(View.VISIBLE);
-        } else {
-            holder.fundalComanda.setVisibility(View.INVISIBLE);
-        }
-        if(produseValues.get(position).getComandate() >= (produseValues.get(position).getStoc() - produseValues.get(position).getRezervata())){
-            holder.fundalComanda.setBackgroundColor(ContextCompat.getColor(context,R.color.colorComanda));
-        } else {
-            holder.fundalComanda.setBackgroundColor(ContextCompat.getColor(context,R.color.colorFacturi));
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        if(holder instanceof CosAdapter.ViewHolder) {
+            ((ViewHolder) holder).denumireProdusTextView.setText(produseValues.get(position).getDenumire());
+            ((ViewHolder) holder).umTextView.setText(produseValues.get(position).getUm());
+            ((ViewHolder) holder).tvaTextView.setText(Integer.toString(produseValues.get(position).getTva()));
+            ((ViewHolder) holder).pretTextView.setText(Float.toString(produseValues.get(position).getPret_livr()));
+            ((ViewHolder) holder).inCosTextView.setText(Integer.toString(produseValues.get(position).getComandate()));
+            Float f = produseValues.get(position).getPret_livr() * produseValues.get(position).getComandate();
+            ((ViewHolder) holder).subtotalTextView.setText(Float.toString(round2(f, 2)));
+            if (produseValues.get(position).getComandate() > 0) {
+                ((ViewHolder) holder).fundalComanda.setVisibility(View.VISIBLE);
+            } else {
+                ((ViewHolder) holder).fundalComanda.setVisibility(View.INVISIBLE);
+            }
+            if (produseValues.get(position).getComandate() >= (produseValues.get(position).getStoc() - produseValues.get(position).getRezervata())) {
+                ((ViewHolder) holder).fundalComanda.setBackgroundColor(ContextCompat.getColor(context, R.color.colorComanda));
+            } else {
+                ((ViewHolder) holder).fundalComanda.setBackgroundColor(ContextCompat.getColor(context, R.color.colorFacturi));
+            }
+        } else if(holder instanceof CosAdapter.ViewHolder1){
+            ((ViewHolder1) holder).denumireProdusTextView.setText(produseValues.get(position).getDenumire());
+            ((ViewHolder1) holder).nrCrtTextView.setText(Integer.toString(position + 1) + ".");
+            ((ViewHolder1) holder).inCosTextView.setText(Integer.toString(produseValues.get(position).getComandate()));
+            ((ViewHolder1) holder).umTextView.setText(produseValues.get(position).getUm());
+            ((ViewHolder1) holder).pretTextView.setText(Float.toString(produseValues.get(position).getPret_livr()));
+            ((ViewHolder1) holder).tvaTextView.setText(Integer.toString(produseValues.get(position).getTva()));
+            Float f = produseValues.get(position).getPret_livr() * produseValues.get(position).getComandate();
+            ((ViewHolder1) holder).subtotalTextView.setText(Float.toString(round2(f, 2)));
+
         }
     }
 
@@ -131,7 +146,7 @@ public class CosAdapter extends RecyclerView.Adapter<CosAdapter.ViewHolder>{
                         } else {
                             fundalComanda.setBackgroundColor(ContextCompat.getColor(context,R.color.colorFacturi));
                         }
-                        mInstance.setTotal();
+                        ((CosActivity) mInstance).setTotal();
                         notifyDataSetChanged();
                     }
 
@@ -156,10 +171,28 @@ public class CosAdapter extends RecyclerView.Adapter<CosAdapter.ViewHolder>{
                     } else {
                         fundalComanda.setBackgroundColor(ContextCompat.getColor(context,R.color.colorFacturi));
                     }
-                    mInstance.setTotal();
+                    ((CosActivity) mInstance).setTotal();
                     notifyDataSetChanged();
                 }
             });
+
+        }
+    }
+
+    public class ViewHolder1 extends RecyclerView.ViewHolder {
+        private TextView denumireProdusTextView, tvaTextView, pretTextView, subtotalTextView;
+        private TextView inCosTextView, umTextView, nrCrtTextView;
+
+
+        public ViewHolder1(View view) {
+            super(view);
+            denumireProdusTextView = (TextView) view.findViewById(R.id.textViewDenumireProf);
+            umTextView = (TextView) view.findViewById(R.id.textViewUmProf);
+            tvaTextView = (TextView) view.findViewById(R.id.textViewTVAProf);
+            pretTextView = (TextView) view.findViewById(R.id.textViewPretProf);
+            inCosTextView = (TextView) view.findViewById(R.id.textViewCantProf);
+            subtotalTextView = (TextView) view.findViewById(R.id.textViewSubtotalProf);
+           nrCrtTextView = (TextView) view.findViewById(R.id.textViewnrCrtProf);
 
         }
     }

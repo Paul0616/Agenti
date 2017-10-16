@@ -27,7 +27,7 @@ public class Parteneri extends AppCompatActivity {
     private LinearLayoutManager layoutManager;
     DBController controller = new DBController(this);
     private AutoCompleteTextView filtruParteneri;
-    private float cod_fiscalSelectat = 0;
+    private String cod_fiscalSelectat = "";
 
 
     @Override
@@ -79,13 +79,13 @@ public class Parteneri extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {
                 adapter.setValues(controller.getParteneri(s.toString()));
-                setButtonEnabled(false, 0);
+                setButtonEnabled(false, "");
                 adapter.notifyDataSetChanged();
             }
         });
     }
 
-    public void setButtonEnabled(Boolean state, float cod_fiscal){
+    public void setButtonEnabled(Boolean state, String cod_fiscal){
         mVeziProforma.setEnabled(state);
         cod_fiscalSelectat = cod_fiscal;
     }
