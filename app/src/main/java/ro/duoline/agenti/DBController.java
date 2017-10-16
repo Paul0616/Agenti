@@ -137,16 +137,19 @@ public class DBController extends SQLiteOpenHelper {
     }
 
 
-    public String getClientFromCos(){
+    public String[] getClientFromCos(){
         String selectQuery = "SELECT cos.cod_fiscal AS cod_fiscal, parteneri.denumire AS denumire FROM cos INNER JOIN parteneri ON cos.cod_fiscal = parteneri.cod_fiscal";
         SQLiteDatabase database = this.getReadableDatabase();
         Cursor cursor = database.rawQuery(selectQuery, null);
         cursor.moveToFirst();
-        String denumire = cursor.getString(cursor.getColumnIndex("denumire"));
-        String cod_fiscal = cursor.getString(cursor.getColumnIndex("cod_fiscal"));
+        String[] client = new String[2];
+        client[0] = cursor.getString(cursor.getColumnIndex("denumire"));
+        client[1] = cursor.getString(cursor.getColumnIndex("cod_fiscal"));
         database.close();
-        return denumire;
+        return client;
     }
+
+
 
     public Boolean isUserValid(String user, String pass){
         //String sel = "SELECT * FROM acces";
@@ -175,6 +178,21 @@ public class DBController extends SQLiteOpenHelper {
         database.close();
         return cv;
 
+    }
+
+    public ContentValues getTotCont(String user){
+
+        String selectQuery = "SELECT * FROM acces WHERE user = '"+user+"' ";
+        SQLiteDatabase database = this.getWritableDatabase();
+        Cursor cursor = database.rawQuery(selectQuery, null);
+        cursor.moveToFirst();
+        ContentValues cv;
+        cv = new ContentValues();
+        cv.put("totcontul", cursor.getString(cursor.getColumnIndex("cod_gestiune")));
+        cv.put("gest", cursor.getString(cursor.getColumnIndex("nume_gestiune")));
+        cv.put("id_user", cursor.getString(cursor.getColumnIndex("id_gestiune")));
+        database.close();
+        return cv;
     }
 
     synchronized public String getDateConectare(String firm){

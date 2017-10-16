@@ -3,6 +3,7 @@ package ro.duoline.agenti;
 
 
 
+import android.content.ContentValues;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.ColorMatrixColorFilter;
@@ -19,6 +20,7 @@ import android.os.Bundle;
 
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -77,8 +79,8 @@ public class ProformaView extends AppCompatActivity implements LoaderManager.Loa
         recyclerViewProforma.addItemDecoration(new LineItemDecoration(this, colorFilter));
         SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
         dataProforma.setText(sdf.format(new Date()));
-        String client = controller.getClientFromCos();
-        clientProforma.setText(client);
+        String[] client = controller.getClientFromCos();
+        clientProforma.setText(client[0]);
         listaCos = controller.getCos();
         adapter = new CosAdapter(this, listaCos, controller, this, 2);
         recyclerViewProforma.setAdapter(adapter);
@@ -89,6 +91,37 @@ public class ProformaView extends AppCompatActivity implements LoaderManager.Loa
         param[1] = "3000000";
         param[2] = "3999999";
         makeURLConnection(makeURL(FIRME_URL_BASE, NRPROFORMA_FILE_PHP_QUERY, param), NRPROFORMA_LOADER_ID);
+        mEmiteButon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                prepareDataForUpload();
+            }
+        });
+    }
+
+    private void prepareDataForUpload(){
+        ContentValues cv = controller.getTotCont(PreferenceManager.getDefaultSharedPreferences(ProformaView.this).getString("USER", ""));
+         //tot cont + gest
+        List<ProduseValues> cos = controller.getCos();
+        float rTotal = 0;
+        float rTva = 0;
+        float rValoare = 0;
+        float discount = 0;
+        float taxaeco = 0;
+        for(int i =0; i <cos.size(); i++){
+            Float reduceri = round2((cos.get(i).getPret_livr() - taxaeco) * discount / 100, 3);
+            rTotal = rTotal + round2(cos.get(i).getComandate() * (cos.get(i).getPret_livr() - reduceri), 2);
+            Float subtotal = round2(cos.get(i).getComandate()*(cos.get(i).getPret_livr()-reduceri),2);
+
+            Float subtotalFaraTva = round2(subtotal * 100 / (100 + cos.get(i).getTva()),2);
+
+            rTva = round2(rTva + subtotal - subtotalFaraTva, 2);
+            int x = 100 + cos.get(i).getTva();
+        }
+        rValoare = round2(rTotal - rTva, 2);
+        String[] client = controller.getClientFromCos();
+        Toast.makeText(getBaseContext(), cv.get("totcontul").toString() + "\n" + cv.get("gest").toString() + "\n" + cv.get("id_user").toString() + "\n" + client[0] + "\n" + client[1] + "\n" +
+                Float.toString(rTotal) + "\n" + Float.toString(rTva) + "\n" + Float.toString(rValoare), Toast.LENGTH_LONG).show();
     }
 
     public void setTotal(){
