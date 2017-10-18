@@ -475,7 +475,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                      db.close();
 
                  } else {
-                     Toast.makeText(context, "Verifica conexiunea de internet. Pentru logare este necesara...", Toast.LENGTH_LONG).show();
+                     Toast.makeText(context, "Verifica conexiunea de internet. Pentru actualizare stocuri este necesara...", Toast.LENGTH_LONG).show();
                  }
 
             }
@@ -507,7 +507,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                     db.close();
 
                 } else {
-                    Toast.makeText(context, "Verifica conexiunea de internet. Pentru logare este necesara...", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, "Verifica conexiunea de internet. Pentru actualizare clienti este necesara...", Toast.LENGTH_LONG).show();
                 }
 
             }

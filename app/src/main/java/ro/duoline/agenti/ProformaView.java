@@ -4,11 +4,13 @@ package ro.duoline.agenti;
 
 
 import android.content.ContentValues;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.ColorMatrixColorFilter;
 import android.icu.text.SimpleDateFormat;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -25,12 +27,22 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 
+import java.net.URLEncoder;
 import java.util.Date;
 
 import java.util.List;
@@ -51,7 +63,9 @@ public class ProformaView extends AppCompatActivity implements LoaderManager.Loa
     private List<ProduseValues> listaCos;
     private final static String FIRME_URL_BASE = "http://www.contliv.eu/agentiAplicatie";
     private final static String NRPROFORMA_FILE_PHP_QUERY = "getNrProforma.php";
+    private final static String SETPROFORMA_FILE_PHP_QUERY = "setProforma.php";
     private static final int NRPROFORMA_LOADER_ID = 37;
+    private static final int SETPROFORMA_LOADER_ID = 38;
 
 
     @Override
@@ -88,18 +102,19 @@ public class ProformaView extends AppCompatActivity implements LoaderManager.Loa
         String dateconectare = controller.getDateConectare(PreferenceManager.getDefaultSharedPreferences(ProformaView.this).getString("FIRMA", "Agenti"));
         String[] param = new String[3];
         param[0] = dateconectare;
-        param[1] = "3000000";
-        param[2] = "3999999";
+        Integer[] proforme = controller.nrProforme(PreferenceManager.getDefaultSharedPreferences(ProformaView.this).getString("USER", ""));
+        param[1] = proforme[0].toString();
+        param[2] = proforme[1].toString();
         makeURLConnection(makeURL(FIRME_URL_BASE, NRPROFORMA_FILE_PHP_QUERY, param), NRPROFORMA_LOADER_ID);
         mEmiteButon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                prepareDataForUpload();
+                new HttpAsyncTask().execute();
             }
         });
     }
 
-    private void prepareDataForUpload(){
+    private JSONArray prepareDataForUpload(){
         ContentValues cv = controller.getTotCont(PreferenceManager.getDefaultSharedPreferences(ProformaView.this).getString("USER", ""));
          //tot cont + gest
         List<ProduseValues> cos = controller.getCos();
@@ -119,9 +134,42 @@ public class ProformaView extends AppCompatActivity implements LoaderManager.Loa
             int x = 100 + cos.get(i).getTva();
         }
         rValoare = round2(rTotal - rTva, 2);
-        String[] client = controller.getClientFromCos();
-        Toast.makeText(getBaseContext(), cv.get("totcontul").toString() + "\n" + cv.get("gest").toString() + "\n" + cv.get("id_user").toString() + "\n" + client[0] + "\n" + client[1] + "\n" +
-                Float.toString(rTotal) + "\n" + Float.toString(rTva) + "\n" + Float.toString(rValoare), Toast.LENGTH_LONG).show();
+        String[] client = controller.getClientFromCos();//client[0] = numele clientului si client[1] = codul fiscal
+        Integer[] proforme = controller.nrProforme(PreferenceManager.getDefaultSharedPreferences(ProformaView.this).getString("USER", ""));
+        try {
+            JSONArray jarrFinal = new JSONArray();
+            JSONObject jo = new JSONObject();
+            jo.accumulate("nr_proforme", proforme[0]);
+            jo.accumulate("nr_proformef", proforme[1]);
+            jo.accumulate("gest", cv.get("gest").toString());
+            jo.accumulate("totcontul", cv.get("totcontul").toString());
+            jo.accumulate("cod_fiscal", client[1]);
+            jo.accumulate("furnizor", client[0]);
+            jo.accumulate("rtva", rTva);
+            jo.accumulate("rTotal", rTotal);
+            jo.accumulate("rValoare", rValoare);
+            jo.accumulate("id_user", cv.get("id_user"));
+            jarrFinal.put(jo);
+            JSONObject jo1 = new JSONObject();
+            for(int i = 0; i < listaCos.size(); i++) {
+                jo1.accumulate("cod", listaCos.get(i).getCodProdus());
+                jo1.accumulate("um", listaCos.get(i).getUm());
+                jo1.accumulate("denumire", listaCos.get(i).getDenumire());
+                jo1.accumulate("qty", listaCos.get(i).getComandate());
+                jo1.accumulate("pret", listaCos.get(i).getPret_livr());
+                jo1.accumulate("tva", listaCos.get(i).getTva());
+                jo1.accumulate("debit", PreferenceManager.getDefaultSharedPreferences(ProformaView.this).getString("DEBIT", ""));
+                jo1.accumulate("gest", cv.get("gest").toString());
+            }
+            jarrFinal.put(jo1);
+
+            return jarrFinal;
+
+        } catch (JSONException e){
+            e.printStackTrace();
+            return null;
+        }
+
     }
 
     public void setTotal(){
@@ -143,6 +191,8 @@ public class ProformaView extends AppCompatActivity implements LoaderManager.Loa
         return (float) (int) ((tmp - (int) tmp) >= 0.5f ? tmp + 1 : tmp) / pow;
     }
 
+
+
     private void makeURLConnection(URL queryURL, int loaderID){
         Bundle queryBundle = new Bundle();
         queryBundle.putString("link",queryURL.toString());
@@ -155,18 +205,25 @@ public class ProformaView extends AppCompatActivity implements LoaderManager.Loa
         }
     }
 
-    private URL makeURL(String base, String file, String[] parameters){
+    public URL makeURL(String base, String file, String[] parameters){
         Uri.Builder builder = new Uri.Builder();
         Uri bultUri;
         //bultUri = Uri.withAppendedPath(bultUri, file);
-        String[] keys = new String[3];
+        String[] keys = new String[5];
         keys[0] = "dateconectare";
         keys[1] = "NR_PROFORME";
         keys[2] = "NR_PROFORMEF";
+        keys[3] = "dateconectare";
+        keys[4] = "sirjson";
+
         if (parameters != null){
             builder = Uri.parse(base).buildUpon().appendPath(file);
             for(int i = 0; i < parameters.length; i++) {
-                builder = builder.appendQueryParameter(keys[i], parameters[i]);
+                if(parameters.length == 2) {
+                    builder = builder.appendQueryParameter(keys[i+3], parameters[i]);
+                } else {
+                    builder = builder.appendQueryParameter(keys[i], parameters[i]);
+                }
             }
             bultUri = builder.build();
         } else {
@@ -238,14 +295,56 @@ public class ProformaView extends AppCompatActivity implements LoaderManager.Loa
             if (data != null) {
                 nrProforma.setText("PROFORMA nr. " + data);
             } else {
-                Toast.makeText(getBaseContext(), "Verifica conexiunea de internet. Pentru logare este necesara...",Toast.LENGTH_LONG).show();
+                Toast.makeText(getBaseContext(), "Verifica conexiunea de internet. Este necesara pentru obtinere numar proforma...",Toast.LENGTH_LONG).show();
             }
         }
+
     }
 
     @Override
     public void onLoaderReset(Loader<String> loader) {
 
     }
+
+
+
+    private class HttpAsyncTask extends AsyncTask<String, Void, String>{
+        @Override
+        protected String doInBackground(String... urls) {
+            JSONArray proforma = prepareDataForUpload();
+            String dateconectare = controller.getDateConectare(PreferenceManager.getDefaultSharedPreferences(ProformaView.this).getString("FIRMA", "Agenti"));
+            try{
+                String json = URLEncoder.encode(proforma.toString(), "UTF-8");
+                // 1. create HttpClient
+                HttpClient httpclient = new DefaultHttpClient();
+                // 2. initialize HTTPGet request
+                HttpGet request = new HttpGet();
+
+
+                request.setURI(new URI(FIRME_URL_BASE+"/"+SETPROFORMA_FILE_PHP_QUERY+"?sirjson="+json+"&dateconectare="+dateconectare));
+                // 2. Execute GET request to the given URL
+                HttpResponse response = httpclient.execute(request);
+                return "YES";
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+                //TODO: in caz ca nu pot accesa internet intreb daca salvez local proforma
+            }
+
+
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            //Mesaj comanda trimisa
+            if(s != null) {
+                controller.deleteAllRecords("cos");
+                Intent i = new Intent(getBaseContext(), MainActivity.class);
+                startActivity(i);
+                Toast.makeText(getBaseContext(), "PROFORMA TRIMISA CU SUCCES!!!", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
 }
 

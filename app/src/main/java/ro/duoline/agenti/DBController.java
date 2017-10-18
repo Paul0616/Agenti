@@ -136,6 +136,17 @@ public class DBController extends SQLiteOpenHelper {
         }
     }
 
+    public Integer[] nrProforme(String user){
+        String selectQuery = "SELECT * FROM acces WHERE user = '"+user+"'";
+        SQLiteDatabase database = this.getReadableDatabase();
+        Cursor cursor = database.rawQuery(selectQuery, null);
+        cursor.moveToFirst();
+        Integer[] proforme = new Integer[2];
+        proforme[0] = cursor.getInt(cursor.getColumnIndex("nr_proforme"));
+        proforme[1] = cursor.getInt(cursor.getColumnIndex("nr_proformef"));
+        database.close();
+        return proforme;
+    }
 
     public String[] getClientFromCos(){
         String selectQuery = "SELECT cos.cod_fiscal AS cod_fiscal, parteneri.denumire AS denumire FROM cos INNER JOIN parteneri ON cos.cod_fiscal = parteneri.cod_fiscal";
