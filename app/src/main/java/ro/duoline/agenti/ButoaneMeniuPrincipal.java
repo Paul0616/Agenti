@@ -13,9 +13,14 @@ public class ButoaneMeniuPrincipal {
     private int culoareButon = Color.parseColor("#ffffff"); //white color
     private String textButon;
     private Drawable icon;
+    private Boolean mesaj;
 
     public int getCuloareButon(){
         return culoareButon;
+    }
+
+    public Boolean getMesaj(){
+        return mesaj;
     }
 
     public String getTextButon(){
@@ -36,5 +41,9 @@ public class ButoaneMeniuPrincipal {
 
     public void setIcon(Drawable icon) {
         this.icon = icon;
+    }
+
+    public void setMesaj(Boolean msj){
+        this.mesaj = msj;
     }
 }

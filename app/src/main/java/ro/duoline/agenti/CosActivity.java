@@ -25,7 +25,7 @@ public class CosActivity extends AppCompatActivity implements RecyclerItemTouchH
     private TextView total;
     private RecyclerView.LayoutManager layoutManager;
     private CosAdapter adapter;
-    private List<ProduseValues> listaCos;
+    private List<ProduseValues> listaCos; //, listaCos1;
     private LinearLayout cosgol;
     private Button bParteneri;
 
@@ -39,7 +39,7 @@ public class CosActivity extends AppCompatActivity implements RecyclerItemTouchH
         recyclerCos = (RecyclerView) findViewById(R.id.recyclerCos);
         bParteneri = (Button) findViewById(R.id.buttonParteneri);
         listaCos = controller.getCos();
-
+    //    listaCos1 = controller.getCosAll();
 
         total = (TextView) findViewById(R.id.textViewTotal);
         setTotal();

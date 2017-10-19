@@ -176,6 +176,19 @@ public class DBController extends SQLiteOpenHelper {
         }
     }
 
+    public Boolean isCosNetrimis(){
+        String selectQuery = "SELECT * FROM cos WHERE trimisa = 0";
+        SQLiteDatabase database = this.getReadableDatabase();
+        Cursor cursor = database.rawQuery(selectQuery, null);
+        int count = cursor.getCount();
+        database.close();
+        if (count > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public ContentValues getDebit(String user, String pass){
         //String sel = "SELECT * FROM acces";
         String selectQuery = "SELECT * FROM acces WHERE user = '"+user+"' AND parola = '"+ pass +"'";
@@ -234,6 +247,11 @@ public class DBController extends SQLiteOpenHelper {
         database.delete("cos","comandate = 0",null);
         database.close();
     }
+    synchronized public void deletefromCosAllTrimise(){
+        SQLiteDatabase database = this.getWritableDatabase();
+        database.delete("cos","trimisa = 1",null);
+        database.close();
+    }
 
     synchronized public void deleteItemfromCos(int cod){
         SQLiteDatabase database = this.getWritableDatabase();
@@ -242,11 +260,19 @@ public class DBController extends SQLiteOpenHelper {
         database.close();
     }
 
+    synchronized public void setCosNetrimis(){
+        SQLiteDatabase database = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("trimisa", 0);
+        database.update("cos", values, "trimisa = 1", null);
+        database.close();
+    }
+
     synchronized public void setCod_FiscalForCos(String cod_fiscal){
         SQLiteDatabase database = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("cod_fiscal", cod_fiscal);
-        database.update("cos", values, null, null);
+        database.update("cos", values, "trimisa = 1", null);
         database.close();
     }
 
@@ -255,7 +281,7 @@ public class DBController extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put("comandate", comanda);
         String[] args = new String[]{Integer.toString(codProdus)};
-        Cursor cursor = database.rawQuery("SELECT * FROM cos WHERE cod = ?", args);
+        Cursor cursor = database.rawQuery("SELECT * FROM cos WHERE cod = ? AND trimisa = 1", args);
         cursor.moveToFirst();
         if(cursor.getCount() > 0) {
 
@@ -315,7 +341,7 @@ public class DBController extends SQLiteOpenHelper {
         List<ProduseValues> data = new ArrayList<ProduseValues>();
         ProduseValues pv;
         String selectQuery = "SELECT produse.cod AS cod, produse.denumire AS denumire, produse.um AS um, produse.stoc AS stoc, produse.rezervata AS rezervata, produse.tva AS tva, produse.pret_livr AS pret_livr, cos.comandate AS comandate FROM produse ";
-        String selectCos = "LEFT OUTER JOIN cos ON produse.cod = cos.cod ";
+        String selectCos = "LEFT OUTER JOIN cos ON (produse.cod = cos.cod AND cos.trimisa = 1)";
         if(all && !filtru.isEmpty() && clasa.isEmpty()){
             selectQuery = selectQuery + selectCos + "WHERE denumire LIKE '%"+filtru+"%'";
         }
@@ -340,7 +366,7 @@ public class DBController extends SQLiteOpenHelper {
         if(!all && filtru.isEmpty() && !clasa.isEmpty()){
             selectQuery = selectQuery + selectCos + "WHERE stoc <> 0 AND clasa = '"+clasa+"'";
         }
-       // selectQuery = selectQuery + " AND cos.trimisa = 1";
+ //       selectQuery = selectQuery + " AND cos.trimisa = 1";
         SQLiteDatabase database = this.getWritableDatabase();
         Cursor cursor = database.rawQuery(selectQuery, null);
         cursor.moveToFirst();
@@ -390,6 +416,33 @@ public class DBController extends SQLiteOpenHelper {
         return data;
     }
 
+    synchronized public List<ProduseValues> getCosAll(){
+        List<ProduseValues> data = new ArrayList<ProduseValues>();
+        ProduseValues pv;
+        String selectQuery = "SELECT cos.comandate AS comandate, cos.cod AS cod, produse.denumire AS denumire, produse.stoc AS stoc, produse.rezervata AS rezervata, produse.um AS um, produse.tva AS tva, produse.pret_livr AS pret_livr FROM cos ";
+        String selectCos = "LEFT OUTER JOIN produse ON cos.cod = produse.cod";
+        selectQuery = selectQuery + selectCos;
+
+        SQLiteDatabase database = this.getWritableDatabase();
+        Cursor cursor = database.rawQuery(selectQuery, null);
+        cursor.moveToFirst();
+
+        while(!cursor.isAfterLast()){
+            pv = new ProduseValues();
+            pv.setDenumire(cursor.getString(cursor.getColumnIndex("denumire")));
+            pv.setUm(cursor.getString(cursor.getColumnIndex("um")));
+            pv.setCodProdus(cursor.getInt(cursor.getColumnIndex("cod")));
+            pv.setTva(cursor.getInt(cursor.getColumnIndex("tva")));
+            pv.setPret_livr(cursor.getFloat(cursor.getColumnIndex("pret_livr")));
+            pv.setStoc(cursor.getInt(cursor.getColumnIndex("stoc")));
+            pv.setRezervata(cursor.getInt(cursor.getColumnIndex("rezervata")));
+            pv.setComandate(cursor.getInt(cursor.getColumnIndex("comandate")));
+            data.add(pv);
+            cursor.moveToNext();
+        }
+        database.close();
+        return data;
+    }
 
     synchronized public List<CategoriiValues> getCategoriiFiltrate(Boolean all, String filtru){
         List<CategoriiValues> data = new ArrayList<CategoriiValues>();

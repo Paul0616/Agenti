@@ -12,6 +12,8 @@ import android.icu.text.SimpleDateFormat;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.content.AsyncTaskLoader;
@@ -22,8 +24,11 @@ import android.os.Bundle;
 
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -56,7 +61,7 @@ import java.util.Scanner;
 public class ProformaView extends AppCompatActivity implements LoaderManager.LoaderCallbacks<String>{
     private TextView nrProforma, dataProforma, totalProforma, clientProforma;
     private RecyclerView recyclerViewProforma;
-    private Button mEmiteButon;
+    private Button mEmiteButon, mSalveaza;
     private LinearLayoutManager layoutManager;
     DBController controller = new DBController(this);
     private CosAdapter adapter;
@@ -78,6 +83,7 @@ public class ProformaView extends AppCompatActivity implements LoaderManager.Loa
         clientProforma = (TextView) findViewById(R.id.clientTextView);
         recyclerViewProforma = (RecyclerView) findViewById(R.id.recyclerViewproforma);
         mEmiteButon = (Button) findViewById(R.id.EmiteProdormaButton);
+        mSalveaza = (Button) findViewById(R.id.salveaza_button);
         layoutManager = new LinearLayoutManager(this);
         recyclerViewProforma.setLayoutManager(layoutManager);
         int iColor = Color.parseColor("#cdcdcd");
@@ -110,6 +116,14 @@ public class ProformaView extends AppCompatActivity implements LoaderManager.Loa
             @Override
             public void onClick(View v) {
                 new HttpAsyncTask().execute();
+            }
+        });
+        mSalveaza.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                controller.setCosNetrimis();
+                Intent i = new Intent(getBaseContext(), MainActivity.class);
+                startActivity(i);
             }
         });
     }
@@ -170,6 +184,16 @@ public class ProformaView extends AppCompatActivity implements LoaderManager.Loa
             return null;
         }
 
+    }
+    public void pregatesteButoaneSalvare(){
+        mSalveaza.setEnabled(true);
+        mEmiteButon.setEnabled(false);
+        Snackbar snack = Snackbar.make(getCurrentFocus(), "Trimitere esuata. Poti salva PROFORMA si s-o trimiti mai tarziu.", Snackbar.LENGTH_LONG);
+        View view = snack.getView();
+        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) view.getLayoutParams();
+        params.gravity = Gravity.TOP;
+        view.setLayoutParams(params);
+        snack.show();
     }
 
     public void setTotal(){
@@ -338,10 +362,12 @@ public class ProformaView extends AppCompatActivity implements LoaderManager.Loa
         protected void onPostExecute(String s) {
             //Mesaj comanda trimisa
             if(s != null) {
-                controller.deleteAllRecords("cos");
+                controller.deletefromCosAllTrimise();
                 Intent i = new Intent(getBaseContext(), MainActivity.class);
                 startActivity(i);
                 Toast.makeText(getBaseContext(), "PROFORMA TRIMISA CU SUCCES!!!", Toast.LENGTH_LONG).show();
+            } else {
+                pregatesteButoaneSalvare();
             }
         }
     }

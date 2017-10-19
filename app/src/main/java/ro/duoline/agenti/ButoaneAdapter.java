@@ -45,17 +45,23 @@ public class ButoaneAdapter extends RecyclerView.Adapter<ButoaneAdapter.ViewHold
        holder.textButon.setText(butoane.get(position).getTextButon());
        holder.iconButon.setImageDrawable(butoane.get(position).getIcon());
        holder.cerc.setBackgroundTintList(ColorStateList.valueOf(butoane.get(position).getCuloareButon()));
+        if(butoane.get(position).getMesaj()){
+            holder.mesajTextButon.setVisibility(View.VISIBLE);
+        } else {
+            holder.mesajTextButon.setVisibility(View.INVISIBLE);
+        }
     }
 
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        private TextView textButon;
+        private TextView textButon, mesajTextButon;
         private ImageView iconButon;
         private View cerc;
 
         public ViewHolder(View view) {
             super(view);
             textButon = (TextView) view.findViewById(R.id.buton_text);
+            mesajTextButon = (TextView) view.findViewById(R.id.msgButton);
             iconButon = (ImageView) view.findViewById(R.id.buton_icon);
             cerc = (View) view.findViewById(R.id.buton_cerc);
             LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.lb);
