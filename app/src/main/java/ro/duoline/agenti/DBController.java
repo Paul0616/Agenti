@@ -18,7 +18,7 @@ import java.util.List;
 
 public class DBController extends SQLiteOpenHelper {
     public DBController(Context applicationcontext){
-        super(applicationcontext, "test.db", null, 10);
+        super(applicationcontext, "test.db", null, 11);
     }
 
     //Create Table
@@ -32,7 +32,7 @@ public class DBController extends SQLiteOpenHelper {
         db.execSQL(query);
         query = "CREATE TABLE produse (ID INTEGER PRIMARY KEY AUTOINCREMENT, cod INTEGER, stoc INTEGER, rezervata INTEGER, clasa TEXT, denumire TEXT, um TEXT, tva INTEGER, pret_livr REAL)";
         db.execSQL(query);
-        query = "CREATE TABLE cos (ID INTEGER PRIMARY KEY AUTOINCREMENT, cod INTEGER, comandate INTEGER, cod_fiscal TEXT)";
+        query = "CREATE TABLE cos (ID INTEGER PRIMARY KEY AUTOINCREMENT, cod INTEGER, comandate INTEGER, cod_fiscal TEXT, trimisa INTEGER)";
         db.execSQL(query);
         query = "CREATE TABLE parteneri (ID INTEGER PRIMARY KEY AUTOINCREMENT, denumire INTEGER, cod_fiscal TEXT, codtara TEXT)";
         db.execSQL(query);
@@ -149,7 +149,7 @@ public class DBController extends SQLiteOpenHelper {
     }
 
     public String[] getClientFromCos(){
-        String selectQuery = "SELECT cos.cod_fiscal AS cod_fiscal, parteneri.denumire AS denumire FROM cos INNER JOIN parteneri ON cos.cod_fiscal = parteneri.cod_fiscal";
+        String selectQuery = "SELECT cos.cod_fiscal AS cod_fiscal, parteneri.denumire AS denumire FROM cos INNER JOIN parteneri ON cos.cod_fiscal = parteneri.cod_fiscal WHERE cos.trimisa = 1";
         SQLiteDatabase database = this.getReadableDatabase();
         Cursor cursor = database.rawQuery(selectQuery, null);
         cursor.moveToFirst();
@@ -246,15 +246,7 @@ public class DBController extends SQLiteOpenHelper {
         SQLiteDatabase database = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("cod_fiscal", cod_fiscal);
-        //String[] args = new String[]{Float.toString(cod_fiscal)};
         database.update("cos", values, null, null);
-       // Cursor cursor = database.rawQuery("SELECT cod_fiscal FROM cos", null);
-    //    cursor.moveToFirst();
-    //    while(!cursor.isAfterLast()){
-   //         float f = cursor.getFloat(cursor.getColumnIndex("cod_fiscal"));
-   //         String fstring = Float.toString(f);
-   //         cursor.moveToNext();
-  //      }
         database.close();
     }
 
@@ -273,6 +265,7 @@ public class DBController extends SQLiteOpenHelper {
             values = new ContentValues();
             values.put("cod", codProdus);
             values.put("comandate", comanda);
+            values.put("trimisa", 1);
             database.insert("cos",null, values);
         }
         database.close();
@@ -347,7 +340,7 @@ public class DBController extends SQLiteOpenHelper {
         if(!all && filtru.isEmpty() && !clasa.isEmpty()){
             selectQuery = selectQuery + selectCos + "WHERE stoc <> 0 AND clasa = '"+clasa+"'";
         }
-
+       // selectQuery = selectQuery + " AND cos.trimisa = 1";
         SQLiteDatabase database = this.getWritableDatabase();
         Cursor cursor = database.rawQuery(selectQuery, null);
         cursor.moveToFirst();
@@ -373,7 +366,7 @@ public class DBController extends SQLiteOpenHelper {
         List<ProduseValues> data = new ArrayList<ProduseValues>();
         ProduseValues pv;
         String selectQuery = "SELECT cos.comandate AS comandate, cos.cod AS cod, produse.denumire AS denumire, produse.stoc AS stoc, produse.rezervata AS rezervata, produse.um AS um, produse.tva AS tva, produse.pret_livr AS pret_livr FROM cos ";
-        String selectCos = "LEFT OUTER JOIN produse ON cos.cod = produse.cod ";
+        String selectCos = "LEFT OUTER JOIN produse ON cos.cod = produse.cod WHERE cos.trimisa = 1";
         selectQuery = selectQuery + selectCos;
 
         SQLiteDatabase database = this.getWritableDatabase();

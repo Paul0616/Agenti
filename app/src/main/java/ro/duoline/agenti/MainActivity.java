@@ -320,7 +320,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         butoane.add(btn);
         btn = new ButoaneMeniuPrincipal();
         btn.setCuloareButon(ContextCompat.getColor(context, R.color.colorMemo));
-        btn.setTextButon("MEMO");
+        btn.setTextButon("OPTIUNI");
         btn.setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_memo));
         butoane.add(btn);
         btn = new ButoaneMeniuPrincipal();

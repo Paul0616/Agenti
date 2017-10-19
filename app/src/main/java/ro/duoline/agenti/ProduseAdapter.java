@@ -59,7 +59,7 @@ public class ProduseAdapter extends RecyclerView.Adapter<ProduseAdapter.ViewHold
                     controller.setProdusComandat(prosuseValues.get(getAdapterPosition()).getCodProdus(), nrBuc);
                     if(prosuseValues.get(getAdapterPosition()).getComandate() > 0){
                         fundalComanda.setVisibility(View.VISIBLE);
-                        if(prosuseValues.get(getAdapterPosition()).getComandate() >= prosuseValues.get(getAdapterPosition()).getStoc()){
+                        if(prosuseValues.get(getAdapterPosition()).getComandate() > prosuseValues.get(getAdapterPosition()).getStoc()){
                             fundalComanda.setBackgroundColor(ContextCompat.getColor(context,R.color.colorComanda));
                         } else {
                             fundalComanda.setBackgroundColor(ContextCompat.getColor(context,R.color.colorFacturi));
@@ -110,7 +110,7 @@ public class ProduseAdapter extends RecyclerView.Adapter<ProduseAdapter.ViewHold
                     controller.setProdusComandat(prosuseValues.get(getAdapterPosition()).getCodProdus(), comandate);
                     if(prosuseValues.get(getAdapterPosition()).getComandate() > 0){
                         fundalComanda.setVisibility(View.VISIBLE);
-                        if(prosuseValues.get(getAdapterPosition()).getComandate() >= (prosuseValues.get(getAdapterPosition()).getStoc() - prosuseValues.get(getAdapterPosition()).getRezervata())){
+                        if(prosuseValues.get(getAdapterPosition()).getComandate() > (prosuseValues.get(getAdapterPosition()).getStoc() - prosuseValues.get(getAdapterPosition()).getRezervata())){
                             fundalComanda.setBackgroundColor(ContextCompat.getColor(context,R.color.colorComanda));
                         } else {
                             fundalComanda.setBackgroundColor(ContextCompat.getColor(context,R.color.colorFacturi));
@@ -135,12 +135,11 @@ public class ProduseAdapter extends RecyclerView.Adapter<ProduseAdapter.ViewHold
                     if(prosuseValues.get(getAdapterPosition()).getComandate() == 0){
                         fundalComanda.setVisibility(View.INVISIBLE);
                     }
-                    if(prosuseValues.get(getAdapterPosition()).getComandate() >= (prosuseValues.get(getAdapterPosition()).getStoc() - prosuseValues.get(getAdapterPosition()).getRezervata())){
+                    if(prosuseValues.get(getAdapterPosition()).getComandate() > (prosuseValues.get(getAdapterPosition()).getStoc() - prosuseValues.get(getAdapterPosition()).getRezervata())){
                         fundalComanda.setBackgroundColor(ContextCompat.getColor(context,R.color.colorComanda));
                     } else {
                         fundalComanda.setBackgroundColor(ContextCompat.getColor(context,R.color.colorFacturi));
                     }
-
                     notifyDataSetChanged();
                 }
             });
@@ -176,7 +175,7 @@ public class ProduseAdapter extends RecyclerView.Adapter<ProduseAdapter.ViewHold
         } else {
             holder.fundalComanda.setVisibility(View.INVISIBLE);
         }
-        if(prosuseValues.get(position).getComandate() >= (prosuseValues.get(position).getStoc() - prosuseValues.get(position).getRezervata())){
+        if(prosuseValues.get(position).getComandate() > (prosuseValues.get(position).getStoc() - prosuseValues.get(position).getRezervata())){
             holder.fundalComanda.setBackgroundColor(ContextCompat.getColor(context,R.color.colorComanda));
         } else {
             holder.fundalComanda.setBackgroundColor(ContextCompat.getColor(context,R.color.colorFacturi));

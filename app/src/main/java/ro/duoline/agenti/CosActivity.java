@@ -10,6 +10,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -59,8 +61,10 @@ public class CosActivity extends AppCompatActivity implements RecyclerItemTouchH
         recyclerCos.addItemDecoration(new LineItemDecoration(this, colorFilter));
         recyclerCos.setAdapter(adapter);
 
+
         ItemTouchHelper.SimpleCallback itemTouchHelperCallBack = new RecyclerItemTouchHelper(0, ItemTouchHelper.RIGHT, this);
         new ItemTouchHelper(itemTouchHelperCallBack).attachToRecyclerView(recyclerCos);
+
         bParteneri.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
