@@ -37,8 +37,9 @@
             android:parentActivityName=".CosActivity" />
         <activity
             android:name=".ProformaView"
-            android:label="@string/title_activity_proforma_view"
-            />
+            android:label="@string/title_activity_proforma_view" />
+        <activity android:name=".ProformeSalvateLocal"
+            android:parentActivityName=".MainActivity"/>
     </application>
 
 </manifest>

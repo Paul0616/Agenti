@@ -78,13 +78,12 @@ public class ButoaneAdapter extends RecyclerView.Adapter<ButoaneAdapter.ViewHold
                     if(butoane.get(getAdapterPosition()).getTextButon().equals("COMANDA")){
                         Intent i = new Intent(context, CategoriiProduse.class);
                         context.startActivity(i);
-                        /*
-                        String firma = PreferenceManager.getDefaultSharedPreferences(context).getString("FIRMA", "Agenti");
-                        String dateconectare = mInstance.controller.getDateConectare(firma);
-                        String contGestiune = PreferenceManager.getDefaultSharedPreferences(context).getString("DEBIT", "");
 
-                        mInstance.loadProduse(dateconectare, contGestiune);
-                        */
+                    }
+                    if(butoane.get(getAdapterPosition()).getTextButon().equals("PROFORME SALVATE")){
+                        Intent i = new Intent(context, ProformeSalvateLocal.class);
+                        context.startActivity(i);
+
                     }
                 }
             });

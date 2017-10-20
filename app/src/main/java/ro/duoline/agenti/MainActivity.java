@@ -124,8 +124,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         layoutManager = new LinearLayoutManager(context);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
-        loadListaFirme();
+
         if (!SaveSharedPreference.getLogged(this)){
+            loadListaFirme();
             cereParola();
             alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(false);
         } else {

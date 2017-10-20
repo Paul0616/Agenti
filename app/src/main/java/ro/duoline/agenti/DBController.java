@@ -268,6 +268,45 @@ public class DBController extends SQLiteOpenHelper {
         database.close();
     }
 
+    synchronized List<Proformevalues> void getProformeNesalvate(){
+        List<Proformevalues> data = new ArrayList<Proformevalues>();
+        Proformevalues pv;
+        String sql = "SELECT cos.cod_fiscal AS cod_fiscal FROM cos WHERE trimisa = 0 GROUP";
+///TODO: Ar trebui sa introduc in tabela cos si data facturii
+        /*
+        String selectQuery = "SELECT cos.comandate AS comandate, produse.denumire AS denumire, produse.um AS um, produse.tva AS tva, produse.pret_livr AS pret_livr, parteneri.denumire AS client FROM cos ";
+        String selectCos = "LEFT OUTER JOIN produse ON cos.cod = produse.cod INNER JOIN parteneri ON cos.cod_fiscal = parteneri.cod_fiscal WHERE cos.trimisa = 0 ORDER BY cos.cod_fiscal";
+
+        SQLiteDatabase database = this.getReadableDatabase();
+        Cursor cursor = database.rawQuery(selectQuery, null);
+        cursor.moveToFirst();
+
+        while(!cursor.isAfterLast()){
+            pv = new Proformevalues();
+            pv.setParent(true);
+            pv.setVisible(true);
+            pv.setClient(cursor.getString(cursor.getColumnIndex("client")));
+          ///  pv.setData(cursor.getString(cursor.getColumnIndex("client")));
+            data.add(pv);
+
+            pv = new Proformevalues();
+
+            pv.setParent(false);
+            pv.setVisible(false);
+            pv.setNrCrt();
+            pv.setDenProdus(cursor.getString(cursor.getColumnIndex("denumire")));
+            pv.setUm(cursor.getString(cursor.getColumnIndex("um")));
+            pv.setTva(cursor.getInt(cursor.getColumnIndex("tva")));
+            pv.setPret_livr(cursor.getFloat(cursor.getColumnIndex("pret_livr")));
+            pv.setBuc(cursor.getInt(cursor.getColumnIndex("comandate")));
+
+            data.add(pv);
+            cursor.moveToNext();
+        } */
+        database.close();
+        return data;
+    }
+
     synchronized public void setCod_FiscalForCos(String cod_fiscal){
         SQLiteDatabase database = this.getWritableDatabase();
         ContentValues values = new ContentValues();

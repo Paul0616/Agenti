@@ -17,4 +17,6 @@
         completions."
     </string>
     <string name="title_activity_proforma_view">Proforma</string>
+    <string name="title_proforma_list">Proforme</string>
+    <string name="title_proforma_detail">Proforma Detail</string>
 </resources>
