@@ -311,6 +311,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         btn.setTextButon("PROFORME SALVATE");
         btn.setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_salvate));
         btn.setMesaj(controller.isCosNetrimis());
+
         butoane.add(btn);
         btn = new ButoaneMeniuPrincipal();
         btn.setCuloareButon(ContextCompat.getColor(context, R.color.colorProforme));

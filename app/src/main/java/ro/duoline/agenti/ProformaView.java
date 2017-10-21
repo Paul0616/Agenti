@@ -8,12 +8,13 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.ColorMatrixColorFilter;
-import android.icu.text.SimpleDateFormat;
+//import android.icu.text.SimpleDateFormat;
+import java.text.SimpleDateFormat;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
+
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.content.AsyncTaskLoader;
@@ -28,7 +29,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
+
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -71,6 +72,8 @@ public class ProformaView extends AppCompatActivity implements LoaderManager.Loa
     private final static String SETPROFORMA_FILE_PHP_QUERY = "setProforma.php";
     private static final int NRPROFORMA_LOADER_ID = 37;
     private static final int SETPROFORMA_LOADER_ID = 38;
+    private static String COD_FISCAL;
+    private static String DATA;
 
 
     @Override
@@ -97,11 +100,24 @@ public class ProformaView extends AppCompatActivity implements LoaderManager.Loa
                 0, 0, 0, 1, 0 };
         ColorFilter colorFilter = new ColorMatrixColorFilter(matrix);
         recyclerViewProforma.addItemDecoration(new LineItemDecoration(this, colorFilter));
-        SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
-        dataProforma.setText(sdf.format(new Date()));
-        String[] client = controller.getClientFromCos();
-        clientProforma.setText(client[0]);
-        listaCos = controller.getCos();
+
+        Intent intent = getIntent();
+        COD_FISCAL = intent.getStringExtra("cod_fiscal");
+        DATA = intent.getStringExtra("data");
+        if(COD_FISCAL == null && DATA == null) {
+            SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
+            dataProforma.setText(sdf.format(new Date()));
+            String[] client = controller.getClientFromCos();
+            clientProforma.setText(client[0]);
+            listaCos = controller.getCos();
+        } else {
+            dataProforma.setText(DATA);
+            clientProforma.setText(controller.getClientFromParteneri(COD_FISCAL));
+            listaCos = controller.getCosSalvat(COD_FISCAL, DATA);
+        }
+
+
+
         adapter = new CosAdapter(this, listaCos, controller, this, 2);
         recyclerViewProforma.setAdapter(adapter);
         setTotal();
@@ -121,7 +137,9 @@ public class ProformaView extends AppCompatActivity implements LoaderManager.Loa
         mSalveaza.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                controller.setCosNetrimis();
+                if(COD_FISCAL == null && DATA == null) {
+                    controller.setCosNetrimis();
+                }
                 Intent i = new Intent(getBaseContext(), MainActivity.class);
                 startActivity(i);
             }
@@ -131,7 +149,12 @@ public class ProformaView extends AppCompatActivity implements LoaderManager.Loa
     private JSONArray prepareDataForUpload(){
         ContentValues cv = controller.getTotCont(PreferenceManager.getDefaultSharedPreferences(ProformaView.this).getString("USER", ""));
          //tot cont + gest
-        List<ProduseValues> cos = controller.getCos();
+        List<ProduseValues> cos;
+        if(COD_FISCAL == null && DATA == null) {
+            cos = controller.getCos();
+        } else {
+            cos = controller.getCosSalvat(COD_FISCAL, DATA);
+        }
         float rTotal = 0;
         float rTva = 0;
         float rValoare = 0;
@@ -148,7 +171,12 @@ public class ProformaView extends AppCompatActivity implements LoaderManager.Loa
             int x = 100 + cos.get(i).getTva();
         }
         rValoare = round2(rTotal - rTva, 2);
-        String[] client = controller.getClientFromCos();//client[0] = numele clientului si client[1] = codul fiscal
+        String[] client;
+        if(COD_FISCAL == null && DATA == null) {
+            client = controller.getClientFromCos();//client[0] = numele clientului si client[1] = codul fiscal
+        } else {
+            client = new String[]{controller.getClientFromParteneri(COD_FISCAL),COD_FISCAL};
+        }
         Integer[] proforme = controller.nrProforme(PreferenceManager.getDefaultSharedPreferences(ProformaView.this).getString("USER", ""));
         try {
             JSONArray jarrFinal = new JSONArray();
@@ -352,7 +380,7 @@ public class ProformaView extends AppCompatActivity implements LoaderManager.Loa
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
-                //TODO: in caz ca nu pot accesa internet intreb daca salvez local proforma
+
             }
 
 
@@ -362,7 +390,11 @@ public class ProformaView extends AppCompatActivity implements LoaderManager.Loa
         protected void onPostExecute(String s) {
             //Mesaj comanda trimisa
             if(s != null) {
-                controller.deletefromCosAllTrimise();
+                if(COD_FISCAL == null && DATA == null) {
+                    controller.deletefromCosAllTrimise();
+                } else {
+                    controller.deletefromCosSalvate(COD_FISCAL, DATA);
+                }
                 Intent i = new Intent(getBaseContext(), MainActivity.class);
                 startActivity(i);
                 Toast.makeText(getBaseContext(), "PROFORMA TRIMISA CU SUCCES!!!", Toast.LENGTH_LONG).show();

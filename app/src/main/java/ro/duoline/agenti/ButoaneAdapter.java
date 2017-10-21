@@ -81,8 +81,10 @@ public class ButoaneAdapter extends RecyclerView.Adapter<ButoaneAdapter.ViewHold
 
                     }
                     if(butoane.get(getAdapterPosition()).getTextButon().equals("PROFORME SALVATE")){
-                        Intent i = new Intent(context, ProformeSalvateLocal.class);
-                        context.startActivity(i);
+                        if(mInstance.controller.isCosNetrimis()) {
+                            Intent i = new Intent(context, ProformeSalvateLocal.class);
+                            context.startActivity(i);
+                        }
 
                     }
                 }

@@ -18,7 +18,7 @@ import java.util.List;
 
 public class DBController extends SQLiteOpenHelper {
     public DBController(Context applicationcontext){
-        super(applicationcontext, "test.db", null, 11);
+        super(applicationcontext, "test.db", null, 12);
     }
 
     //Create Table
@@ -32,7 +32,7 @@ public class DBController extends SQLiteOpenHelper {
         db.execSQL(query);
         query = "CREATE TABLE produse (ID INTEGER PRIMARY KEY AUTOINCREMENT, cod INTEGER, stoc INTEGER, rezervata INTEGER, clasa TEXT, denumire TEXT, um TEXT, tva INTEGER, pret_livr REAL)";
         db.execSQL(query);
-        query = "CREATE TABLE cos (ID INTEGER PRIMARY KEY AUTOINCREMENT, cod INTEGER, comandate INTEGER, cod_fiscal TEXT, trimisa INTEGER)";
+        query = "CREATE TABLE cos (ID INTEGER PRIMARY KEY AUTOINCREMENT, cod INTEGER, comandate INTEGER, cod_fiscal TEXT, trimisa INTEGER, data TEXT)";
         db.execSQL(query);
         query = "CREATE TABLE parteneri (ID INTEGER PRIMARY KEY AUTOINCREMENT, denumire INTEGER, cod_fiscal TEXT, codtara TEXT)";
         db.execSQL(query);
@@ -159,7 +159,17 @@ public class DBController extends SQLiteOpenHelper {
         database.close();
         return client;
     }
+    public String getClientFromParteneri(String cod_fiscal){
+        String selectQuery = "SELECT parteneri.denumire AS denumire FROM parteneri WHERE parteneri.cod_fiscal = '" + cod_fiscal +"'";
+        SQLiteDatabase database = this.getReadableDatabase();
+        Cursor cursor = database.rawQuery(selectQuery, null);
+        cursor.moveToFirst();
 
+        String client = cursor.getString(cursor.getColumnIndex("denumire"));
+
+        database.close();
+        return client;
+    }
 
 
     public Boolean isUserValid(String user, String pass){
@@ -253,10 +263,24 @@ public class DBController extends SQLiteOpenHelper {
         database.close();
     }
 
+    synchronized public void deletefromCosSalvate(String cod_fiscal, String data){
+        SQLiteDatabase database = this.getWritableDatabase();
+        String[] args = new String[]{cod_fiscal, data};
+        database.delete("cos","trimisa = 0 AND cod_fiscal = ? AND data = ?",args);
+        database.close();
+    }
+
     synchronized public void deleteItemfromCos(int cod){
         SQLiteDatabase database = this.getWritableDatabase();
         String[] args = new String[]{Integer.toString(cod)};
         database.delete("cos","cod = ?",args);
+        database.close();
+    }
+
+    synchronized public void deleteItemfromCosWithCodFiscal(String cod_fiscal, String data){
+        SQLiteDatabase database = this.getWritableDatabase();
+        String[] args = new String[]{cod_fiscal, data};
+        database.delete("cos","cod_fiscal = ? AND data = ?",args);
         database.close();
     }
 
@@ -268,20 +292,63 @@ public class DBController extends SQLiteOpenHelper {
         database.close();
     }
 
-    synchronized List<Proformevalues> void getProformeNesalvate(){
+    synchronized public List<Proformevalues> getProformeNesalvate(){
         List<Proformevalues> data = new ArrayList<Proformevalues>();
         Proformevalues pv;
-        String sql = "SELECT cos.cod_fiscal AS cod_fiscal FROM cos WHERE trimisa = 0 GROUP";
-///TODO: Ar trebui sa introduc in tabela cos si data facturii
-        /*
-        String selectQuery = "SELECT cos.comandate AS comandate, produse.denumire AS denumire, produse.um AS um, produse.tva AS tva, produse.pret_livr AS pret_livr, parteneri.denumire AS client FROM cos ";
-        String selectCos = "LEFT OUTER JOIN produse ON cos.cod = produse.cod INNER JOIN parteneri ON cos.cod_fiscal = parteneri.cod_fiscal WHERE cos.trimisa = 0 ORDER BY cos.cod_fiscal";
+        String sql = "SELECT cos.cod_fiscal AS cod_fiscal, cos.data AS data, parteneri.denumire AS client FROM cos INNER JOIN parteneri ON cos.cod_fiscal = parteneri.cod_fiscal WHERE trimisa = 0 GROUP BY cos.cod_fiscal, cos.data";
+
+
+        String selectQuery = "SELECT cos.comandate AS comandate, produse.denumire AS denumire, produse.um AS um, produse.tva AS tva, produse.pret_livr AS pret_livr FROM cos ";
+        selectQuery = selectQuery + "LEFT OUTER JOIN produse ON cos.cod = produse.cod WHERE cos.trimisa = 0 ";
+
 
         SQLiteDatabase database = this.getReadableDatabase();
-        Cursor cursor = database.rawQuery(selectQuery, null);
-        cursor.moveToFirst();
+        Cursor cursorMaster = database.rawQuery(sql, null);
 
-        while(!cursor.isAfterLast()){
+        cursorMaster.moveToFirst();
+        while(!cursorMaster.isAfterLast()){
+            pv = new Proformevalues();
+            pv.setParent(true);
+            pv.setVisible(true);
+            pv.setClient(cursorMaster.getString(cursorMaster.getColumnIndex("client")));
+            pv.setData(cursorMaster.getString(cursorMaster.getColumnIndex("data")));
+            pv.setCod_fiscal(cursorMaster.getString(cursorMaster.getColumnIndex("cod_fiscal")));
+            data.add(pv);
+            String sqlJos = selectQuery + "AND cos.cod_fiscal = " + cursorMaster.getString(cursorMaster.getColumnIndex("cod_fiscal")) +
+                    " AND cos.data = '" + cursorMaster.getString(cursorMaster.getColumnIndex("data")) + "'";
+            Cursor cursorDetail = database.rawQuery(sqlJos, null);
+            cursorDetail.moveToFirst();
+            int i = 1;
+            float total = 0;
+            while(!cursorDetail.isAfterLast()){
+                pv = new Proformevalues();
+                pv.setParent(false);
+                pv.setVisible(false);
+                pv.setNrCrt(i++);
+                pv.setClient(cursorMaster.getString(cursorMaster.getColumnIndex("client")));
+                pv.setData(cursorMaster.getString(cursorMaster.getColumnIndex("data")));
+                pv.setDenProdus(cursorDetail.getString(cursorDetail.getColumnIndex("denumire")));
+                pv.setUm(cursorDetail.getString(cursorDetail.getColumnIndex("um")));
+                pv.setTva(cursorDetail.getInt(cursorDetail.getColumnIndex("tva")));
+                pv.setPret_livr(cursorDetail.getFloat(cursorDetail.getColumnIndex("pret_livr")));
+                pv.setBuc(cursorDetail.getInt(cursorDetail.getColumnIndex("comandate")));
+                pv.setCod_fiscal(cursorMaster.getString(cursorMaster.getColumnIndex("cod_fiscal")));
+                data.add(pv);
+                total = total + round2((pv.getBuc() * pv.getPret_livr()),2);
+                cursorDetail.moveToNext();
+            }
+            pv = new Proformevalues();
+            pv.setParent(false);
+            pv.setVisible(false);
+            pv.setDenProdus("TOTAL:");
+            pv.setPret_livr(total);
+            pv.setClient(cursorMaster.getString(cursorMaster.getColumnIndex("client")));
+            pv.setData(cursorMaster.getString(cursorMaster.getColumnIndex("data")));
+            pv.setCod_fiscal(cursorMaster.getString(cursorMaster.getColumnIndex("cod_fiscal")));
+            data.add(pv);
+            cursorMaster.moveToNext();
+        }
+        /*while(!cursor.isAfterLast()){
             pv = new Proformevalues();
             pv.setParent(true);
             pv.setVisible(true);
@@ -289,28 +356,18 @@ public class DBController extends SQLiteOpenHelper {
           ///  pv.setData(cursor.getString(cursor.getColumnIndex("client")));
             data.add(pv);
 
-            pv = new Proformevalues();
 
-            pv.setParent(false);
-            pv.setVisible(false);
-            pv.setNrCrt();
-            pv.setDenProdus(cursor.getString(cursor.getColumnIndex("denumire")));
-            pv.setUm(cursor.getString(cursor.getColumnIndex("um")));
-            pv.setTva(cursor.getInt(cursor.getColumnIndex("tva")));
-            pv.setPret_livr(cursor.getFloat(cursor.getColumnIndex("pret_livr")));
-            pv.setBuc(cursor.getInt(cursor.getColumnIndex("comandate")));
-
-            data.add(pv);
             cursor.moveToNext();
-        } */
+        }*/
         database.close();
         return data;
     }
 
-    synchronized public void setCod_FiscalForCos(String cod_fiscal){
+    synchronized public void setCod_FiscalForCos(String cod_fiscal, String data){
         SQLiteDatabase database = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("cod_fiscal", cod_fiscal);
+        values.put("data", data);
         database.update("cos", values, "trimisa = 1", null);
         database.close();
     }
@@ -331,6 +388,7 @@ public class DBController extends SQLiteOpenHelper {
             values.put("cod", codProdus);
             values.put("comandate", comanda);
             values.put("trimisa", 1);
+
             database.insert("cos",null, values);
         }
         database.close();
@@ -430,8 +488,37 @@ public class DBController extends SQLiteOpenHelper {
     synchronized public List<ProduseValues> getCos(){
         List<ProduseValues> data = new ArrayList<ProduseValues>();
         ProduseValues pv;
-        String selectQuery = "SELECT cos.comandate AS comandate, cos.cod AS cod, produse.denumire AS denumire, produse.stoc AS stoc, produse.rezervata AS rezervata, produse.um AS um, produse.tva AS tva, produse.pret_livr AS pret_livr FROM cos ";
+        String selectQuery = "SELECT cos.comandate AS comandate, cos.cod AS cod, produse.denumire AS denumire, produse.stoc AS stoc, produse.rezervata AS rezervata, " +
+                "produse.um AS um, produse.tva AS tva, produse.pret_livr AS pret_livr FROM cos ";
         String selectCos = "LEFT OUTER JOIN produse ON cos.cod = produse.cod WHERE cos.trimisa = 1";
+        selectQuery = selectQuery + selectCos;
+
+        SQLiteDatabase database = this.getWritableDatabase();
+        Cursor cursor = database.rawQuery(selectQuery, null);
+        cursor.moveToFirst();
+
+        while(!cursor.isAfterLast()){
+            pv = new ProduseValues();
+            pv.setDenumire(cursor.getString(cursor.getColumnIndex("denumire")));
+            pv.setUm(cursor.getString(cursor.getColumnIndex("um")));
+            pv.setCodProdus(cursor.getInt(cursor.getColumnIndex("cod")));
+            pv.setTva(cursor.getInt(cursor.getColumnIndex("tva")));
+            pv.setPret_livr(cursor.getFloat(cursor.getColumnIndex("pret_livr")));
+            pv.setStoc(cursor.getInt(cursor.getColumnIndex("stoc")));
+            pv.setRezervata(cursor.getInt(cursor.getColumnIndex("rezervata")));
+            pv.setComandate(cursor.getInt(cursor.getColumnIndex("comandate")));
+            data.add(pv);
+            cursor.moveToNext();
+        }
+        database.close();
+        return data;
+    }
+    synchronized public List<ProduseValues> getCosSalvat(String cod_fiscal, String data1){
+        List<ProduseValues> data = new ArrayList<ProduseValues>();
+        ProduseValues pv;
+        String selectQuery = "SELECT cos.comandate AS comandate, cos.cod AS cod, produse.denumire AS denumire, produse.stoc AS stoc, produse.rezervata AS rezervata, " +
+                "produse.um AS um, produse.tva AS tva, produse.pret_livr AS pret_livr FROM cos ";
+        String selectCos = "LEFT OUTER JOIN produse ON cos.cod = produse.cod WHERE cos.trimisa = 0 AND cos.cod_fiscal = '" + cod_fiscal + "' AND cos.data = '" + data1 + "'";
         selectQuery = selectQuery + selectCos;
 
         SQLiteDatabase database = this.getWritableDatabase();
@@ -512,5 +599,13 @@ public class DBController extends SQLiteOpenHelper {
         }
         database.close();
         return data;
+    }
+
+    public float round2(float number, int scale) {
+        int pow = 10;
+        for (int i = 1; i < scale; i++)
+            pow *= 10;
+        float tmp = number * pow;
+        return (float) (int) ((tmp - (int) tmp) >= 0.5f ? tmp + 1 : tmp) / pow;
     }
 }

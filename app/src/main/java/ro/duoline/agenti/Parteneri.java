@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.ColorMatrixColorFilter;
+//import android.icu.text.SimpleDateFormat;
+import java.text.SimpleDateFormat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,6 +17,7 @@ import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 
+import java.util.Date;
 
 
 /**
@@ -59,7 +62,8 @@ public class Parteneri extends AppCompatActivity {
         mVeziProforma.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                controller.setCod_FiscalForCos(cod_fiscalSelectat);
+                SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
+                controller.setCod_FiscalForCos(cod_fiscalSelectat, sdf.format(new Date()));
                 Intent i = new Intent(getBaseContext(), ProformaView.class);
                 startActivity(i);
             }

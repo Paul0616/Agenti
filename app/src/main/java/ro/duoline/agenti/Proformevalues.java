@@ -7,9 +7,17 @@ package ro.duoline.agenti;
 public class Proformevalues {
     private Boolean parent;
     private Boolean visible;
-    private String client, data, denProdus, um;
+    private String client, data, denProdus, um, cod_fiscal;
     private Integer nrCrt, buc, tva;
     private Float pret_livr;
+
+    public void setCod_fiscal(String cod_fiscal) {
+        this.cod_fiscal = cod_fiscal;
+    }
+
+    public String getCod_fiscal() {
+        return cod_fiscal;
+    }
 
     public Boolean getParent() {
         return parent;

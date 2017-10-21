@@ -10,6 +10,7 @@ import java.util.List;
 
 public class ProformeSalvateLocal extends AppCompatActivity {
     private RecyclerView recyclerView;
+    private ProformeSalavateAdapter adapter;
     private RecyclerView.LayoutManager layoutManager;
     DBController controller = new DBController(this);
 
@@ -20,9 +21,10 @@ public class ProformeSalvateLocal extends AppCompatActivity {
         recyclerView = (RecyclerView)findViewById(R.id.recyclerSalvate);
         layoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
-        List<Proformevalues> = new ArrayList<Proformevalues>();
-        Proformevalues obj = new Proformevalues();
-        controller.
+        List<Proformevalues> valori = controller.getProformeNesalvate();
+        adapter = new ProformeSalavateAdapter(this, valori, ProformeSalvateLocal.this);
+        recyclerView.setAdapter(adapter);
+        //controller.
 
     }
 }
