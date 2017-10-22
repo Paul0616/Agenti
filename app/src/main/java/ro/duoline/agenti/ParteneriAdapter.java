@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -20,10 +19,10 @@ public class ParteneriAdapter extends RecyclerView.Adapter<ParteneriAdapter.View
     private List<ParteneriValues> parteneriValues;
     private Context context;
     private DBController controller;
-    Parteneri mInstance;
+    ParteneriActivity mInstance;
 
 
-    public ParteneriAdapter(Context context, List<ParteneriValues> prosuseValues, DBController controller, Parteneri mInstance){
+    public ParteneriAdapter(Context context, List<ParteneriValues> prosuseValues, DBController controller, ParteneriActivity mInstance){
         this.context = context;
         this.controller = controller;
         this.mInstance = mInstance;

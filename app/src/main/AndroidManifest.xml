@@ -24,21 +24,24 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".CategoriiProduse"
+            android:name=".CategoriiProduseActivity"
             android:parentActivityName=".MainActivity" />
         <activity
             android:name=".ProduseActivity"
-            android:parentActivityName=".CategoriiProduse" />
+            android:parentActivityName=".CategoriiProduseActivity" />
         <activity
             android:name=".CosActivity"
             android:parentActivityName=".ProduseActivity" />
         <activity
-            android:name=".Parteneri"
+            android:name=".ParteneriActivity"
             android:parentActivityName=".CosActivity" />
         <activity
-            android:name=".ProformaView"
+            android:name=".ProformaViewActivity"
             android:label="@string/title_activity_proforma_view" />
-        <activity android:name=".ProformeSalvateLocal"
+        <activity
+            android:name=".ProformeSalvateLocalActivity"
+            android:parentActivityName=".MainActivity" />
+        <activity android:name=".ViewServerProformeActivity"
             android:parentActivityName=".MainActivity"/>
     </application>
 

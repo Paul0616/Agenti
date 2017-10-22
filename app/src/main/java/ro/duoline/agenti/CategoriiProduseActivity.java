@@ -17,7 +17,7 @@ import android.widget.ToggleButton;
 
 import java.util.List;
 
-public class CategoriiProduse extends AppCompatActivity {
+public class CategoriiProduseActivity extends AppCompatActivity {
     private RecyclerView recyclerCategorii;
     private RecyclerView.LayoutManager layoutManager;
     private CategoriiAdapter adapter;

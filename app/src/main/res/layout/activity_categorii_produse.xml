@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/background_dark"
-    tools:context="ro.duoline.agenti.CategoriiProduse">
+    android:background="@color/colorBackground"
+    tools:context="ro.duoline.agenti.CategoriiProduseActivity">
 
     <LinearLayout
         android:id="@+id/hedear_layout"
@@ -14,7 +14,7 @@
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginTop="8dp"
-        android:background="@color/colorProforme"
+        android:background="@color/colorTextAccent"
         android:orientation="vertical"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -43,8 +43,7 @@
             android:layout_marginTop="8dp"
             android:ems="10"
             android:hint="filtrare categorii"
-            android:inputType="textPersonName"
-            android:textColor="@color/colorComanda" />
+            android:inputType="textPersonName" />
 
     </LinearLayout>
 
@@ -96,7 +95,7 @@
                 android:layout_toEndOf="@+id/crt_cerc"
                 android:layout_toRightOf="@+id/crt_cerc"
                 android:text="TOATE PRODUSELE"
-                android:textColor="@android:color/background_light"
+                android:textColor="@color/colorText"
                 android:textSize="18sp" />
 
             <TextView
@@ -110,7 +109,7 @@
                 android:layout_marginEnd="10dp"
                 android:layout_weight="1"
                 android:text="5430"
-                android:textColor="@android:color/background_light"
+                android:textColor="@color/colorText"
                 android:textSize="10sp" />
 
         </RelativeLayout>

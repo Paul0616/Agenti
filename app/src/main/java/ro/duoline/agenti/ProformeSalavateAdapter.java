@@ -2,6 +2,7 @@ package ro.duoline.agenti;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,13 +22,17 @@ public class ProformeSalavateAdapter extends RecyclerView.Adapter<RecyclerView.V
     private static final int TYPE_CHILD = 1;
     private List<Proformevalues> proformeSalvate, proformeSalvateFiltrate;
     private Context context;
-    ProformeSalvateLocal mInstance;
+    AppCompatActivity mInstance;
 
 
-    public ProformeSalavateAdapter(Context context, List<Proformevalues> proforme, ProformeSalvateLocal mInstance){
+    public ProformeSalavateAdapter(Context context, List<Proformevalues> proforme, AppCompatActivity mInstance){
         this.context = context;
         this.proformeSalvate = proforme;
-        this.mInstance = mInstance;
+        if(mInstance instanceof ProformeSalvateLocalActivity) {
+            this.mInstance = (ProformeSalvateLocalActivity) mInstance;
+        } else if (mInstance instanceof ViewServerProformeActivity){
+            this.mInstance = (ViewServerProformeActivity) mInstance;
+        }
         this.proformeSalvateFiltrate = new ArrayList<>();
         for (int i = 0; i<proformeSalvate.size(); i++){
             if(proformeSalvate.get(i).getVisible()) proformeSalvateFiltrate.add(proformeSalvate.get(i));
@@ -50,12 +55,18 @@ public class ProformeSalavateAdapter extends RecyclerView.Adapter<RecyclerView.V
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if(holder instanceof ParentViewHolder){
+            if(proformeSalvateFiltrate.get(position).getNrFact() != null){
+                ((ParentViewHolder) holder).nrFact.setText(proformeSalvateFiltrate.get(position).getNrFact().toString());
+            } else {
+                ((ParentViewHolder) holder).nrFact.setText("");
+            }
+
             if(proformeSalvateFiltrate.get(position).getClient() != null){
                 ((ParentViewHolder) holder).client.setText(proformeSalvateFiltrate.get(position).getClient());
             } else {
                 ((ParentViewHolder) holder).client.setText("");
             }
-            if(proformeSalvateFiltrate.get(position).getClient() != null){
+            if(proformeSalvateFiltrate.get(position).getData() != null){
                 ((ParentViewHolder) holder).dataProforma.setText(proformeSalvateFiltrate.get(position).getData());
             } else {
                 ((ParentViewHolder) holder).client.setText("");
@@ -97,13 +108,20 @@ public class ProformeSalavateAdapter extends RecyclerView.Adapter<RecyclerView.V
                 ((ChildViewHolder) holder).textview13.setVisibility(View.VISIBLE);
                 ((ChildViewHolder) holder).textview14.setVisibility(View.VISIBLE);
                 ((ChildViewHolder) holder).layoutButoane.setVisibility(View.INVISIBLE);
+                ((ChildViewHolder) holder).linie.setVisibility(View.INVISIBLE);
             } else {
                 ((ChildViewHolder) holder).subtotalTextView.setText(proformeSalvateFiltrate.get(position).getPret_livr().toString());
                 ((ChildViewHolder) holder).pretTextView.setText(proformeSalvateFiltrate.get(position).getDenProdus());
                 ((ChildViewHolder) holder).textview13.setVisibility(View.INVISIBLE);
                 ((ChildViewHolder) holder).textview14.setVisibility(View.INVISIBLE);
                 ((ChildViewHolder) holder).denumireProdusTextView.setText("");
-                ((ChildViewHolder) holder).layoutButoane.setVisibility(View.VISIBLE);
+                if(mInstance instanceof ProformeSalvateLocalActivity) {
+                    ((ChildViewHolder) holder).layoutButoane.setVisibility(View.VISIBLE);
+                    ((ChildViewHolder) holder).linie.setVisibility(View.INVISIBLE);
+                } else {
+                    ((ChildViewHolder) holder).layoutButoane.setVisibility(View.INVISIBLE);
+                    ((ChildViewHolder) holder).linie.setVisibility(View.VISIBLE);
+                }
             }
         }
     }
@@ -120,25 +138,40 @@ public class ProformeSalavateAdapter extends RecyclerView.Adapter<RecyclerView.V
     }
 
     public class ParentViewHolder extends RecyclerView.ViewHolder{
-        public TextView client, dataProforma;
+        public TextView client, dataProforma, nrFact;
         public ParentViewHolder(View itemView){
             super(itemView);
             client = (TextView) itemView.findViewById(R.id.clientTextView);
             dataProforma = (TextView) itemView.findViewById(R.id.textData);
+            nrFact = (TextView) itemView.findViewById(R.id.textviewNrfact);
             itemView.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View v) {
                     String client = proformeSalvateFiltrate.get(getAdapterPosition()).getClient();
                     String data = proformeSalvateFiltrate.get(getAdapterPosition()).getData();
+                    int nrProforma = 0;
+                    if(proformeSalvateFiltrate.get(getAdapterPosition()).getNrFact() != null) {
+                        nrProforma = proformeSalvateFiltrate.get(getAdapterPosition()).getNrFact();
+                    }
                     proformeSalvateFiltrate.clear();
                     notifyItemRangeRemoved(0, proformeSalvateFiltrate.size()-1);
 
                     allChildrensInvisible();
                     for(int i=0; i<proformeSalvate.size(); i++){
-                        if(proformeSalvate.get(i).getClient().equals(client) && proformeSalvate.get(i).getData().equals(data)) proformeSalvate.get(i).setVisible(true);
+                        if(proformeSalvate.get(i).getNrFact() == null){
+                            if(proformeSalvate.get(i).getClient().equals(client) && proformeSalvate.get(i).getData().equals(data)) proformeSalvate.get(i).setVisible(true);
+                        } else {
+                            if(proformeSalvate.get(i).getNrFact() == nrProforma) proformeSalvate.get(i).setVisible(true);
+                        }
+
                         if(proformeSalvate.get(i).getVisible()) proformeSalvateFiltrate.add(proformeSalvate.get(i));
-                       notifyItemChanged(i);
-                        //notifyDataSetChanged();
+                      //notifyItemChanged(i);
+                        //
+                    }
+                    if(mInstance instanceof ProformeSalvateLocalActivity){
+                        notifyItemRangeChanged(0, proformeSalvateFiltrate.size());
+                    }else{
+                        notifyDataSetChanged();
                     }
 
                 }
@@ -148,7 +181,7 @@ public class ProformeSalavateAdapter extends RecyclerView.Adapter<RecyclerView.V
 
     public class ChildViewHolder extends RecyclerView.ViewHolder{
         private TextView denumireProdusTextView, tvaTextView, pretTextView, subtotalTextView, nrCrt, cantit, um, textview14, textview13, butTrimite, butSterge;
-        private LinearLayout layoutButoane;
+        private LinearLayout layoutButoane, linie;
         public ChildViewHolder(View itemView){
             super(itemView);
             denumireProdusTextView = (TextView) itemView.findViewById(R.id.textViewDenumireProf);
@@ -161,16 +194,17 @@ public class ProformeSalavateAdapter extends RecyclerView.Adapter<RecyclerView.V
             textview13 = (TextView) itemView.findViewById(R.id.textView13);
             subtotalTextView = (TextView) itemView.findViewById(R.id.textViewSubtotalProf);
             layoutButoane = (LinearLayout) itemView.findViewById(R.id.butoanePtProformeSalvate);
+            linie = (LinearLayout) itemView.findViewById(R.id.linie);
             butTrimite = (TextView) itemView.findViewById(R.id.textViewButTrimite);
             butSterge = (TextView) itemView.findViewById(R.id.textViewbutSterge);
 
             butTrimite.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent i = new Intent(context, ProformaView.class);
+                    Intent i = new Intent(context, ProformaViewActivity.class);
                     i.putExtra("cod_fiscal", proformeSalvateFiltrate.get(getAdapterPosition()).getCod_fiscal());
                     i.putExtra("data", proformeSalvateFiltrate.get(getAdapterPosition()).getData());
-                    mInstance.startActivity(i);
+                    ((ProformeSalvateLocalActivity) mInstance).startActivity(i);
                 }
             });
             butSterge.setOnClickListener(new View.OnClickListener() {
@@ -209,7 +243,7 @@ public class ProformeSalavateAdapter extends RecyclerView.Adapter<RecyclerView.V
             }
 
         }
-        mInstance.controller.deleteItemfromCosWithCodFiscal(cod_fiscal, data);
+        ((ProformeSalvateLocalActivity) mInstance).controller.deleteItemfromCosWithCodFiscal(cod_fiscal, data);
     }
 
     public float round2(float number, int scale) {

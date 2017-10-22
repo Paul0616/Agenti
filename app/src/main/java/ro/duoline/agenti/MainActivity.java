@@ -300,12 +300,14 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         btn.setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_action_name));
         btn.setMesaj(false);
         butoane.add(btn);
+        /*
         btn = new ButoaneMeniuPrincipal();
         btn.setCuloareButon(ContextCompat.getColor(context, R.color.colorScanare));
         btn.setTextButon("SCANARE / INVENTARIERE");
         btn.setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_scan));
         btn.setMesaj(false);
         butoane.add(btn);
+        */
         btn = new ButoaneMeniuPrincipal();
         btn.setCuloareButon(ContextCompat.getColor(context, R.color.colorSalvate));
         btn.setTextButon("PROFORME SALVATE");

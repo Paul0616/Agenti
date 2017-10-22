@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/background_dark"
-    tools:context="ro.duoline.agenti.ProformaView">
+    android:background="@color/colorBackground"
+    tools:context="ro.duoline.agenti.ProformaViewActivity">
 
     <TextView
         android:id="@+id/nrProformaTextView"
@@ -15,7 +15,7 @@
         android:layout_marginRight="8dp"
         android:layout_marginTop="24dp"
         android:text="PROFORMA nr."
-        android:textColor="@color/colorProforme"
+        android:textColor="@color/colorTextAccent"
         android:textSize="26sp"
         android:textStyle="bold"
         app:layout_constraintHorizontal_bias="0.47"
@@ -33,7 +33,7 @@
         android:layout_marginRight="8dp"
         android:layout_marginTop="8dp"
         android:text="13.10.2017"
-        android:textColor="@color/colorProforme"
+        android:textColor="@color/colorTextAccent"
         app:layout_constraintHorizontal_bias="0.441"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -51,7 +51,7 @@
         android:background="@drawable/rectangle"
         android:padding="5dp"
         android:text="TextView"
-        android:textColor="@android:color/background_light"
+        android:textColor="@color/colorText"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/dataProformaTextView"
@@ -81,7 +81,7 @@
         android:layout_marginLeft="8dp"
         android:layout_marginRight="24dp"
         android:text="Total: 1111 lei"
-        android:textColor="@android:color/background_light"
+        android:textColor="@color/colorText"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/butoane"

@@ -4,13 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/background_dark">
+    android:background="@color/colorBackground">
 
     <LinearLayout
         android:id="@+id/inputholder"
         android:layout_width="368dp"
         android:layout_height="wrap_content"
-        android:background="@color/colorProforme"
+        android:background="@color/colorTextAccent"
         android:descendantFocusability="beforeDescendants"
         android:focusableInTouchMode="true"
         android:orientation="horizontal"
@@ -30,8 +30,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="filtrare parteneri"
-                android:inputType="textAutoComplete"
-                android:textColor="@android:color/background_light" />
+                android:inputType="textAutoComplete" />
         </android.support.design.widget.TextInputLayout>
     </LinearLayout>
 

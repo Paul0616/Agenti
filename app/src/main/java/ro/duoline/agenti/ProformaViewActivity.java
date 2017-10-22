@@ -59,7 +59,7 @@ import java.util.Scanner;
 /**
  * A login screen that offers login via email/password.
  */
-public class ProformaView extends AppCompatActivity implements LoaderManager.LoaderCallbacks<String>{
+public class ProformaViewActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<String>{
     private TextView nrProforma, dataProforma, totalProforma, clientProforma;
     private RecyclerView recyclerViewProforma;
     private Button mEmiteButon, mSalveaza;
@@ -121,10 +121,10 @@ public class ProformaView extends AppCompatActivity implements LoaderManager.Loa
         adapter = new CosAdapter(this, listaCos, controller, this, 2);
         recyclerViewProforma.setAdapter(adapter);
         setTotal();
-        String dateconectare = controller.getDateConectare(PreferenceManager.getDefaultSharedPreferences(ProformaView.this).getString("FIRMA", "Agenti"));
+        String dateconectare = controller.getDateConectare(PreferenceManager.getDefaultSharedPreferences(ProformaViewActivity.this).getString("FIRMA", "Agenti"));
         String[] param = new String[3];
         param[0] = dateconectare;
-        Integer[] proforme = controller.nrProforme(PreferenceManager.getDefaultSharedPreferences(ProformaView.this).getString("USER", ""));
+        Integer[] proforme = controller.nrProforme(PreferenceManager.getDefaultSharedPreferences(ProformaViewActivity.this).getString("USER", ""));
         param[1] = proforme[0].toString();
         param[2] = proforme[1].toString();
         makeURLConnection(makeURL(FIRME_URL_BASE, NRPROFORMA_FILE_PHP_QUERY, param), NRPROFORMA_LOADER_ID);
@@ -147,7 +147,7 @@ public class ProformaView extends AppCompatActivity implements LoaderManager.Loa
     }
 
     private JSONArray prepareDataForUpload(){
-        ContentValues cv = controller.getTotCont(PreferenceManager.getDefaultSharedPreferences(ProformaView.this).getString("USER", ""));
+        ContentValues cv = controller.getTotCont(PreferenceManager.getDefaultSharedPreferences(ProformaViewActivity.this).getString("USER", ""));
          //tot cont + gest
         List<ProduseValues> cos;
         if(COD_FISCAL == null && DATA == null) {
@@ -177,7 +177,7 @@ public class ProformaView extends AppCompatActivity implements LoaderManager.Loa
         } else {
             client = new String[]{controller.getClientFromParteneri(COD_FISCAL),COD_FISCAL};
         }
-        Integer[] proforme = controller.nrProforme(PreferenceManager.getDefaultSharedPreferences(ProformaView.this).getString("USER", ""));
+        Integer[] proforme = controller.nrProforme(PreferenceManager.getDefaultSharedPreferences(ProformaViewActivity.this).getString("USER", ""));
         try {
             JSONArray jarrFinal = new JSONArray();
             JSONObject jo = new JSONObject();
@@ -200,7 +200,7 @@ public class ProformaView extends AppCompatActivity implements LoaderManager.Loa
                 jo1.accumulate("qty", listaCos.get(i).getComandate());
                 jo1.accumulate("pret", listaCos.get(i).getPret_livr());
                 jo1.accumulate("tva", listaCos.get(i).getTva());
-                jo1.accumulate("debit", PreferenceManager.getDefaultSharedPreferences(ProformaView.this).getString("DEBIT", ""));
+                jo1.accumulate("debit", PreferenceManager.getDefaultSharedPreferences(ProformaViewActivity.this).getString("DEBIT", ""));
                 jo1.accumulate("gest", cv.get("gest").toString());
             }
             jarrFinal.put(jo1);
@@ -343,6 +343,7 @@ public class ProformaView extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public void onLoadFinished(Loader<String> loader, String data) {
+
         if (loader.getId() == NRPROFORMA_LOADER_ID) {
             if (data != null) {
                 nrProforma.setText("PROFORMA nr. " + data);
@@ -364,7 +365,7 @@ public class ProformaView extends AppCompatActivity implements LoaderManager.Loa
         @Override
         protected String doInBackground(String... urls) {
             JSONArray proforma = prepareDataForUpload();
-            String dateconectare = controller.getDateConectare(PreferenceManager.getDefaultSharedPreferences(ProformaView.this).getString("FIRMA", "Agenti"));
+            String dateconectare = controller.getDateConectare(PreferenceManager.getDefaultSharedPreferences(ProformaViewActivity.this).getString("FIRMA", "Agenti"));
             try{
                 String json = URLEncoder.encode(proforma.toString(), "UTF-8");
                 // 1. create HttpClient

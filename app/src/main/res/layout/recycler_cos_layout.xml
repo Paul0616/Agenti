@@ -35,7 +35,7 @@
         android:id="@+id/view_foreground"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/background_dark"
+        android:background="@color/colorBackground"
         android:orientation="horizontal">
 
         <LinearLayout
@@ -50,7 +50,7 @@
                 android:layout_height="wrap_content"
                 android:padding="3dp"
                 android:text="DIAMOND STAR CIORAP BANDA GAZELLE MARIMEA M"
-                android:textColor="@android:color/background_light"
+                android:textColor="@color/colorText"
                 android:textSize="14sp" />
 
             <LinearLayout
@@ -74,7 +74,7 @@
                         android:layout_weight="1"
                         android:text="pret:"
                         android:textAlignment="textEnd"
-                        android:textColor="@android:color/background_light"
+                        android:textColor="@color/colorText"
                         android:textSize="9dp" />
 
                     <TextView
@@ -84,7 +84,7 @@
                         android:layout_gravity="center_vertical"
                         android:layout_weight="1"
                         android:text="15.4"
-                        android:textColor="@android:color/background_light"
+                        android:textColor="@color/colorText"
                         android:textStyle="bold" />
 
                 </LinearLayout>
@@ -103,7 +103,7 @@
                         android:layout_weight="1"
                         android:text="tva:"
                         android:textAlignment="textEnd"
-                        android:textColor="@android:color/background_light"
+                        android:textColor="@color/colorText"
                         android:textSize="9dp" />
 
                     <TextView
@@ -113,7 +113,7 @@
                         android:layout_gravity="center_vertical"
                         android:layout_weight="1"
                         android:text="19"
-                        android:textColor="@android:color/background_light" />
+                        android:textColor="@color/colorText" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -129,7 +129,7 @@
                         android:paddingTop="3dp"
                         android:text="Subtotal"
                         android:textAlignment="center"
-                        android:textColor="@android:color/background_light"
+                        android:textColor="@color/colorText"
                         android:textSize="9dp" />
 
                     <LinearLayout
@@ -181,7 +181,7 @@
                     android:layout_height="wrap_content"
                     android:text="in cos"
                     android:textAlignment="center"
-                    android:textColor="@android:color/background_dark"
+                    android:textColor="@color/colorBackground"
                     android:textSize="9dp" />
 
                 <LinearLayout
@@ -197,7 +197,7 @@
                         android:layout_gravity="center_horizontal"
                         android:text="0"
                         android:textAlignment="textEnd"
-                        android:textColor="@android:color/background_dark" />
+                        android:textColor="@color/colorBackground" />
 
                     <TextView
                         android:id="@+id/textViewBucCos"
@@ -205,7 +205,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
                         android:text="BUC"
-                        android:textColor="@android:color/background_dark" />
+                        android:textColor="@color/colorBackground" />
                 </LinearLayout>
 
             </LinearLayout>

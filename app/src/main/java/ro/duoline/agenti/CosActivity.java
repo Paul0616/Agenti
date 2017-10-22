@@ -10,8 +10,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -68,7 +66,7 @@ public class CosActivity extends AppCompatActivity implements RecyclerItemTouchH
         bParteneri.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(getBaseContext(), Parteneri.class);
+                Intent i = new Intent(getBaseContext(), ParteneriActivity.class);
                 startActivity(i);
             }
         });

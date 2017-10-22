@@ -10,4 +10,7 @@
     <color name="colorFacturi">#5cc300</color>
     <color name="colorMemo">#07438e</color>
     <color name="colorDeconectare">#dc143c</color>
+    <color name="colorBackground">#000</color>
+    <color name="colorText">#c8ffffff</color>
+    <color name="colorTextAccent">#ffaa06</color>
 </resources>

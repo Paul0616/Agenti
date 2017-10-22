@@ -23,7 +23,7 @@ import java.util.Date;
 /**
  * A login screen that offers login via email/password.
  */
-public class Parteneri extends AppCompatActivity {
+public class ParteneriActivity extends AppCompatActivity {
     private RecyclerView recyclerViewParteneri;
     private Button mVeziProforma;
     private ParteneriAdapter adapter;
@@ -64,7 +64,7 @@ public class Parteneri extends AppCompatActivity {
             public void onClick(View v) {
                 SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
                 controller.setCod_FiscalForCos(cod_fiscalSelectat, sdf.format(new Date()));
-                Intent i = new Intent(getBaseContext(), ProformaView.class);
+                Intent i = new Intent(getBaseContext(), ProformaViewActivity.class);
                 startActivity(i);
             }
         });

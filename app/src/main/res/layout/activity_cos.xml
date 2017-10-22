@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/background_dark"
+    android:background="@color/colorBackground"
     tools:context="ro.duoline.agenti.CosActivity">
 
     <LinearLayout
@@ -41,7 +41,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="COS PRODUSE GOL"
-            android:textColor="@android:color/background_light" />
+            android:textColor="@color/colorText" />
 
     </LinearLayout>
 
@@ -56,7 +56,7 @@
         android:layout_marginStart="8dp"
         android:text="Total: 0 lei"
         android:textAlignment="center"
-        android:textColor="@color/colorProforme"
+        android:textColor="@color/colorTextAccent"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"

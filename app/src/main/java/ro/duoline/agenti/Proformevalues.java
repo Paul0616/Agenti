@@ -8,8 +8,16 @@ public class Proformevalues {
     private Boolean parent;
     private Boolean visible;
     private String client, data, denProdus, um, cod_fiscal;
-    private Integer nrCrt, buc, tva;
+    private Integer nrCrt, buc, tva, nrFact;
     private Float pret_livr;
+
+    public void setNrFact(Integer nrFact) {
+        this.nrFact = nrFact;
+    }
+
+    public Integer getNrFact() {
+        return nrFact;
+    }
 
     public void setCod_fiscal(String cod_fiscal) {
         this.cod_fiscal = cod_fiscal;

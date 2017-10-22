@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/background_dark"
+    android:background="@color/colorBackground"
     tools:context="ro.duoline.agenti.ProduseActivity">
 
     <LinearLayout
@@ -48,8 +48,7 @@
                 android:layout_weight="1"
                 android:ems="10"
                 android:hint="filtrare produse"
-                android:inputType="textPersonName"
-                android:textColor="@color/colorComanda" />
+                android:inputType="textPersonName" />
 
             <Button
                 android:id="@+id/buttonCos"
