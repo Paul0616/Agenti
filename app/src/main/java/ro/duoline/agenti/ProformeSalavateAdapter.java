@@ -56,7 +56,11 @@ public class ProformeSalavateAdapter extends RecyclerView.Adapter<RecyclerView.V
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if(holder instanceof ParentViewHolder){
             if(proformeSalvateFiltrate.get(position).getNrFact() != null){
-                ((ParentViewHolder) holder).nrFact.setText(proformeSalvateFiltrate.get(position).getNrFact().toString());
+                if(proformeSalvateFiltrate.get(position).getNrFact() != 0) {
+                    ((ParentViewHolder) holder).nrFact.setText(proformeSalvateFiltrate.get(position).getNrFact().toString());
+                } else {
+                    ((ParentViewHolder) holder).nrFact.setText("BON");
+                }
             } else {
                 ((ParentViewHolder) holder).nrFact.setText("");
             }
@@ -158,7 +162,7 @@ public class ProformeSalavateAdapter extends RecyclerView.Adapter<RecyclerView.V
 
                     allChildrensInvisible();
                     for(int i=0; i<proformeSalvate.size(); i++){
-                        if(proformeSalvate.get(i).getNrFact() == null){
+                        if(proformeSalvate.get(i).getNrFact() == null ){
                             if(proformeSalvate.get(i).getClient().equals(client) && proformeSalvate.get(i).getData().equals(data)) proformeSalvate.get(i).setVisible(true);
                         } else {
                             if(proformeSalvate.get(i).getNrFact() == nrProforma) proformeSalvate.get(i).setVisible(true);
@@ -173,7 +177,11 @@ public class ProformeSalavateAdapter extends RecyclerView.Adapter<RecyclerView.V
                     }else{
                         notifyDataSetChanged();
                     }
-
+                    /*
+                    if(mInstance instanceof FacturiActivity){
+                        ((FacturiActivity) mInstance).layoutManager.scrollToPosition(getAdapterPosition());
+                    }
+                    */
                 }
             });
         }

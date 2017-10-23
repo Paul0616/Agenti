@@ -31,6 +31,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Scanner;
 
@@ -45,7 +46,7 @@ public class FacturiActivity extends AppCompatActivity implements LoaderManager.
     private final static String PANALA = "panala";
     private List<Proformevalues> list = new ArrayList<Proformevalues>();
    // private FacturiAdapter adapter;
-    private RecyclerView.LayoutManager layoutManager;
+    public RecyclerView.LayoutManager layoutManager;
     private ProgressDialog pd;
     private ImageView iconDeLa, iconPanaLa;
     private DatePickerDialog datePickerDialog;
@@ -70,25 +71,34 @@ public class FacturiActivity extends AppCompatActivity implements LoaderManager.
         pd = new ProgressDialog(this);
         pd.setMessage("Se incarca lista cu facturi de pe server...");
         pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        ContentValues cv = controller.getTotCont(PreferenceManager.getDefaultSharedPreferences(FacturiActivity.this).getString("USER", ""));
 
-        SimpleDateFormat sdf1 = new SimpleDateFormat("dd.MM.yyyy");
 
-        String data2 = sdf1.format(new Date());
+      //  SimpleDateFormat sdf1 = new SimpleDateFormat("dd.MM.yyyy");
+        Calendar currentDate = Calendar.getInstance();
+        String data2 = currentDate.get(Calendar.DATE) + "." + (currentDate.get(Calendar.MONTH)+1) + "." + currentDate.get(Calendar.YEAR);
+
         textPanaLa.setText(data2);
-
-        try {
-            Date currentdate = new Date();
-            Date firstDte = sdf1.parse("1." + (currentdate.getMonth() + 1) + "." + currentdate.getYear());
-            textDeLA.setText(sdf1.format(firstDte));
-        } catch (Exception e){
-            e.printStackTrace();
-        }
+        panalaFormat = setDateInServerFormat(currentDate);
+     //   try {
+            Calendar currentdate = new GregorianCalendar(currentDate.get(Calendar.YEAR), currentDate.get(Calendar.MONTH), 1);
+            String data1 = currentdate.get(Calendar.DATE) + "." + (currentdate.get(Calendar.MONTH)+1) + "." + currentdate.get(Calendar.YEAR);
+            textDeLA.setText(data1);
+            delaFomat = setDateInServerFormat(currentDate);
+     //   } catch (Exception e){
+     //       e.printStackTrace();
+     //   }
 
         getFacturiBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                ContentValues cv = controller.getTotCont(PreferenceManager.getDefaultSharedPreferences(FacturiActivity.this).getString("USER", ""));
+                String[] param = new String[]{
+                        controller.getDateConectare(PreferenceManager.getDefaultSharedPreferences(FacturiActivity.this).getString("FIRMA", "Agenti")),
+                        cv.getAsString("id_user"),
+                        delaFomat,
+                        panalaFormat
+                };
+                makeURLConnection(makeURL(FILE,  param), LOADER_ID);
             }
         });
 
@@ -105,14 +115,8 @@ public class FacturiActivity extends AppCompatActivity implements LoaderManager.
                     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
 
                         textDeLA.setText(dayOfMonth + "." + (month + 1) + "." + year);
-
-                        try {
-                            SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy");
-                            Date firstDate = sdf.parse((month + 1) + "-" + dayOfMonth + "-" + year);
-                            delaFomat = sdf.format(firstDate);
-                        } catch (Exception e){
-                            e.printStackTrace();
-                        }
+                        Calendar date = new GregorianCalendar(year, (month+1), dayOfMonth);
+                        delaFomat = setDateInServerFormat(date);
                     }
                 }, mYear, mMonth, 1);
 
@@ -132,13 +136,8 @@ public class FacturiActivity extends AppCompatActivity implements LoaderManager.
                     @Override
                     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                         textPanaLa.setText(dayOfMonth + "." + (month + 1) + "." + year);
-                        try {
-                            SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy");
-                            Date secondDate = sdf.parse((month + 1) + "-" + dayOfMonth + "-" + year);
-                            panalaFormat = sdf.format(secondDate);
-                        } catch (Exception e){
-                            e.printStackTrace();
-                        }
+                        Calendar date = new GregorianCalendar(year, (month+1), dayOfMonth);
+                        panalaFormat = setDateInServerFormat(date);
                     }
                 }, mYear, mMonth, mDay);
                 datePickerDialog.setCancelable(false);
@@ -146,15 +145,14 @@ public class FacturiActivity extends AppCompatActivity implements LoaderManager.
             }
         });
 
-        String[] param = new String[]{
-                controller.getDateConectare(PreferenceManager.getDefaultSharedPreferences(FacturiActivity.this).getString("FIRMA", "Agenti")),
-                cv.getAsString("id_user"),
-                delaFomat,
-                panalaFormat
-        };
-        makeURLConnection(makeURL(FILE,  param), LOADER_ID);
-    }
 
+    }
+    private String setDateInServerFormat(Calendar date){
+       String dataFormatata = "";
+        Calendar currentdate = new GregorianCalendar(date.get(Calendar.YEAR), date.get(Calendar.MONTH), date.get(Calendar.DATE));
+        dataFormatata = currentdate.get(Calendar.MONTH) + "-" + currentdate.get(Calendar.DATE) + "-" + currentdate.get(Calendar.YEAR);
+       return dataFormatata;
+    }
     private void makeURLConnection(URL queryURL, int loaderID){
         Bundle queryBundle = new Bundle();
         queryBundle.putString("link",queryURL.toString());
@@ -209,7 +207,7 @@ public class FacturiActivity extends AppCompatActivity implements LoaderManager.
         }
     }
     @Override
-    public Loader<String> onCreateLoader(int id, Bundle args) {
+    public Loader<String> onCreateLoader(int id, final Bundle args) {
         return new AsyncTaskLoader<String>(this) {
             @Override
             protected void onStartLoading() {
@@ -240,17 +238,17 @@ public class FacturiActivity extends AppCompatActivity implements LoaderManager.
         JSONArray jArray = null;
         if (loader.getId() == LOADER_ID) {
             if (data != null) {
-                try{
+                try {
                     jArray = new JSONArray(data);
                     float total = 0;
                     int nr_unic = 0;
                     int nrcrt = 1;
-                    String furn="", dataF="", cod_f ="";
-                    int nrFact =0;
+                    String furn = "", dataF = "", cod_f = "";
+                    int nrFact = 0;
                     Proformevalues pv;
-                    for(int i =0; i< jArray.length(); i++){
-                        if(jArray.getJSONObject(i).getInt("nr_unic") != nr_unic){
-                            if(total != 0){
+                    for (int i = 0; i < jArray.length(); i++) {
+                        if (jArray.getJSONObject(i).getInt("nr_unic") != nr_unic) {
+                            if (total != 0) {
                                 pv = new Proformevalues();
                                 pv.setCod_fiscal(cod_f);
                                 pv.setClient(furn);
@@ -294,7 +292,7 @@ public class FacturiActivity extends AppCompatActivity implements LoaderManager.
                         dataF = jArray.getJSONObject(i).getString("data");
                         cod_f = jArray.getJSONObject(i).getString("cod_fiscal");
                         nrFact = jArray.getJSONObject(i).getInt("nr_fact");
-                        if(i == (jArray.length() - 1)){
+                        if (i == (jArray.length() - 1)) {
                             pv = new Proformevalues();
                             pv.setCod_fiscal(cod_f);
                             pv.setClient(furn);
@@ -308,15 +306,16 @@ public class FacturiActivity extends AppCompatActivity implements LoaderManager.
                         }
                     }
                     pd.dismiss();
-                    adapter = new ProformeSalavateAdapter(getBaseContext(),list,ViewServerProformeActivity.this);
+                    adapter = new ProformeSalavateAdapter(getBaseContext(), list, FacturiActivity.this);
                     recyclerView.setAdapter(adapter);
 
-                }catch(JSONException e){
+                } catch (JSONException e) {
                     e.printStackTrace();
                 }
             } else {
-                Toast.makeText(getBaseContext(), "Verifica conexiunea de internet. Este necesara pentru obtinere numar proforma...",Toast.LENGTH_LONG).show();
+                Toast.makeText(getBaseContext(), "Verifica conexiunea de internet. Este necesara pentru obtinere numar proforma...", Toast.LENGTH_LONG).show();
             }
+        }
     }
 
     @Override

@@ -35,7 +35,7 @@ public class ViewServerProformeActivity extends AppCompatActivity implements Loa
     private final static String IDUSER = "iduser";
     private List<Proformevalues> list = new ArrayList<Proformevalues>();
     private ProformeSalavateAdapter adapter;
-    private RecyclerView.LayoutManager layoutManager;
+    public RecyclerView.LayoutManager layoutManager;
     private ProgressDialog pd;
 
     @Override
