@@ -41,8 +41,10 @@
         <activity
             android:name=".ProformeSalvateLocalActivity"
             android:parentActivityName=".MainActivity" />
-        <activity android:name=".ViewServerProformeActivity"
-            android:parentActivityName=".MainActivity"/>
+        <activity
+            android:name=".ViewServerProformeActivity"
+            android:parentActivityName=".MainActivity" />
+        <activity android:name=".FacturiActivity"></activity>
     </application>
 
 </manifest>
