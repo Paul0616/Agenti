@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.Resources;
 import android.database.sqlite.SQLiteDatabase;
 
 import android.net.Uri;
@@ -68,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private JSONArray jArray; //contine lista cu toate firmele si datele de conectare la Bazele lor de Date
     private Boolean produseLoaded = false;
     private Boolean parteneriLoaded = false;
-
+    private Res res;
     DBController controller = new DBController(this);
 
     private ProgressDialog pd;
@@ -76,8 +77,17 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private ArrayList<ButoaneMeniuPrincipal>  butoane;
 
     @Override
+    public Resources getResources() {
+        if(res == null){
+            res = new Res(super.getResources());
+        }
+        return res;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTheme(R.style.stilLight);
         setContentView(R.layout.activity_main);
        // getApplication().setTheme(R.style.Dark);
         context = this;
