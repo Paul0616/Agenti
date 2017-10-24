@@ -27,6 +27,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -80,10 +81,10 @@ public class FacturiActivity extends AppCompatActivity implements LoaderManager.
         textPanaLa.setText(data2);
         panalaFormat = setDateInServerFormat(currentDate);
      //   try {
-            Calendar currentdate = new GregorianCalendar(currentDate.get(Calendar.YEAR), currentDate.get(Calendar.MONTH), 1);
-            String data1 = currentdate.get(Calendar.DATE) + "." + (currentdate.get(Calendar.MONTH)+1) + "." + currentdate.get(Calendar.YEAR);
+            Calendar firstdate = new GregorianCalendar(currentDate.get(Calendar.YEAR), currentDate.get(Calendar.MONTH), 1);
+            String data1 = firstdate.get(Calendar.DATE) + "." + (firstdate.get(Calendar.MONTH)+1) + "." + firstdate.get(Calendar.YEAR);
             textDeLA.setText(data1);
-            delaFomat = setDateInServerFormat(currentDate);
+            delaFomat = setDateInServerFormat(firstdate);
      //   } catch (Exception e){
      //       e.printStackTrace();
      //   }
@@ -103,31 +104,50 @@ public class FacturiActivity extends AppCompatActivity implements LoaderManager.
         });
 
         iconDeLa.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
                 final Calendar c = Calendar.getInstance();
+                DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
+                try {
+                    Date da = df.parse(textDeLA.getText().toString());
+                    c.setTime(da);
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+
                 int mYear = c.get(Calendar.YEAR);
                 int mMonth = c.get(Calendar.MONTH);
+                int mDay = c.get(Calendar.DAY_OF_MONTH);
 
 
                 datePickerDialog = new DatePickerDialog(FacturiActivity.this, new DatePickerDialog.OnDateSetListener(){
+
                     @Override
                     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
 
                         textDeLA.setText(dayOfMonth + "." + (month + 1) + "." + year);
-                        Calendar date = new GregorianCalendar(year, (month+1), dayOfMonth);
+                        Calendar date = new GregorianCalendar(year, (month), dayOfMonth);
                         delaFomat = setDateInServerFormat(date);
                     }
-                }, mYear, mMonth, 1);
+                }, mYear, mMonth, mDay);
 
                 datePickerDialog.setCancelable(false);
                 datePickerDialog.show();
             }
         });
+
         iconPanaLa.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 final Calendar c = Calendar.getInstance();
+                DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
+                try {
+                    Date da = df.parse(textPanaLa.getText().toString());
+                    c.setTime(da);
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
                 int mYear = c.get(Calendar.YEAR);
                 int mMonth = c.get(Calendar.MONTH);
                 int mDay = c.get(Calendar.DAY_OF_MONTH);
@@ -136,7 +156,7 @@ public class FacturiActivity extends AppCompatActivity implements LoaderManager.
                     @Override
                     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                         textPanaLa.setText(dayOfMonth + "." + (month + 1) + "." + year);
-                        Calendar date = new GregorianCalendar(year, (month+1), dayOfMonth);
+                        Calendar date = new GregorianCalendar(year, (month), dayOfMonth);
                         panalaFormat = setDateInServerFormat(date);
                     }
                 }, mYear, mMonth, mDay);
@@ -149,8 +169,11 @@ public class FacturiActivity extends AppCompatActivity implements LoaderManager.
     }
     private String setDateInServerFormat(Calendar date){
        String dataFormatata = "";
+        int y = date.get(Calendar.YEAR);
+        int m = date.get(Calendar.MONTH);
+        int d = date.get(Calendar.DATE);
         Calendar currentdate = new GregorianCalendar(date.get(Calendar.YEAR), date.get(Calendar.MONTH), date.get(Calendar.DATE));
-        dataFormatata = currentdate.get(Calendar.MONTH) + "-" + currentdate.get(Calendar.DATE) + "-" + currentdate.get(Calendar.YEAR);
+        dataFormatata = (currentdate.get(Calendar.MONTH) + 1)  + "-" + currentdate.get(Calendar.DATE) + "-" + currentdate.get(Calendar.YEAR);
        return dataFormatata;
     }
     private void makeURLConnection(URL queryURL, int loaderID){
@@ -238,19 +261,22 @@ public class FacturiActivity extends AppCompatActivity implements LoaderManager.
         JSONArray jArray = null;
         if (loader.getId() == LOADER_ID) {
             if (data != null) {
+                list.clear();
                 try {
                     jArray = new JSONArray(data);
                     float total = 0;
-                    int nr_unic = 0;
+                    long nr_unic = 0;
                     int nrcrt = 1;
                     String furn = "", dataF = "", cod_f = "";
+                    long nr_unic_vechi = 0;
                     int nrFact = 0;
                     Proformevalues pv;
                     for (int i = 0; i < jArray.length(); i++) {
-                        if (jArray.getJSONObject(i).getInt("nr_unic") != nr_unic) {
+                        if (jArray.getJSONObject(i).getLong("nr_unic") != nr_unic) {
                             if (total != 0) {
                                 pv = new Proformevalues();
                                 pv.setCod_fiscal(cod_f);
+                                pv.setNr_unic(nr_unic_vechi);
                                 pv.setClient(furn);
                                 pv.setNrFact(nrFact);
                                 pv.setData(dataF);
@@ -260,8 +286,9 @@ public class FacturiActivity extends AppCompatActivity implements LoaderManager.
                                 pv.setVisible(false);
                                 list.add(pv);
                             }
-                            nr_unic = jArray.getJSONObject(i).getInt("nr_unic");
+                            nr_unic = jArray.getJSONObject(i).getLong("nr_unic");
                             pv = new Proformevalues();
+                            pv.setNr_unic(nr_unic);
                             pv.setCod_fiscal(jArray.getJSONObject(i).getString("cod_fiscal"));
                             pv.setClient(jArray.getJSONObject(i).getString("furnizor"));
                             pv.setNrFact(jArray.getJSONObject(i).getInt("nr_fact"));
@@ -274,6 +301,7 @@ public class FacturiActivity extends AppCompatActivity implements LoaderManager.
 
                         }
                         pv = new Proformevalues();
+
                         pv.setBuc(jArray.getJSONObject(i).getInt("CANTI"));
                         pv.setDenProdus(jArray.getJSONObject(i).getString("denumire"));
                         pv.setUm(jArray.getJSONObject(i).getString("um"));
@@ -281,6 +309,7 @@ public class FacturiActivity extends AppCompatActivity implements LoaderManager.
                         pv.setPret_livr((float) jArray.getJSONObject(i).getDouble("pret_livr"));
                         pv.setNrCrt(nrcrt++);
                         pv.setCod_fiscal(jArray.getJSONObject(i).getString("cod_fiscal"));
+                        pv.setNr_unic(nr_unic);
                         pv.setClient(jArray.getJSONObject(i).getString("furnizor"));
                         pv.setNrFact(jArray.getJSONObject(i).getInt("nr_fact"));
                         pv.setData(jArray.getJSONObject(i).getString("data"));
@@ -292,9 +321,11 @@ public class FacturiActivity extends AppCompatActivity implements LoaderManager.
                         dataF = jArray.getJSONObject(i).getString("data");
                         cod_f = jArray.getJSONObject(i).getString("cod_fiscal");
                         nrFact = jArray.getJSONObject(i).getInt("nr_fact");
+                        nr_unic_vechi = jArray.getJSONObject(i).getLong("nr_unic");
                         if (i == (jArray.length() - 1)) {
                             pv = new Proformevalues();
                             pv.setCod_fiscal(cod_f);
+                            pv.setNr_unic(nr_unic_vechi);
                             pv.setClient(furn);
                             pv.setNrFact(nrFact);
                             pv.setData(dataF);
@@ -306,8 +337,14 @@ public class FacturiActivity extends AppCompatActivity implements LoaderManager.
                         }
                     }
                     pd.dismiss();
-                    adapter = new ProformeSalavateAdapter(getBaseContext(), list, FacturiActivity.this);
-                    recyclerView.setAdapter(adapter);
+
+                  //  if(adapter == null) {
+                        adapter = new ProformeSalavateAdapter(getBaseContext(), list, FacturiActivity.this);
+                        recyclerView.setAdapter(adapter);
+                //    } else {
+
+                //        adapter.notifyDataSetChanged();
+               //     }
 
                 } catch (JSONException e) {
                     e.printStackTrace();

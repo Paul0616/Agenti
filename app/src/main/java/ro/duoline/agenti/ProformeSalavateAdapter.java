@@ -27,11 +27,14 @@ public class ProformeSalavateAdapter extends RecyclerView.Adapter<RecyclerView.V
 
     public ProformeSalavateAdapter(Context context, List<Proformevalues> proforme, AppCompatActivity mInstance){
         this.context = context;
+
         this.proformeSalvate = proforme;
         if(mInstance instanceof ProformeSalvateLocalActivity) {
             this.mInstance = (ProformeSalvateLocalActivity) mInstance;
         } else if (mInstance instanceof ViewServerProformeActivity){
             this.mInstance = (ViewServerProformeActivity) mInstance;
+        } else if (mInstance instanceof FacturiActivity){
+            this.mInstance = (FacturiActivity) mInstance;
         }
         this.proformeSalvateFiltrate = new ArrayList<>();
         for (int i = 0; i<proformeSalvate.size(); i++){
@@ -154,8 +157,10 @@ public class ProformeSalavateAdapter extends RecyclerView.Adapter<RecyclerView.V
                     String client = proformeSalvateFiltrate.get(getAdapterPosition()).getClient();
                     String data = proformeSalvateFiltrate.get(getAdapterPosition()).getData();
                     int nrProforma = 0;
+                    long nr_unic = 0;
                     if(proformeSalvateFiltrate.get(getAdapterPosition()).getNrFact() != null) {
                         nrProforma = proformeSalvateFiltrate.get(getAdapterPosition()).getNrFact();
+                        nr_unic = proformeSalvateFiltrate.get(getAdapterPosition()).getNr_unic();
                     }
                     proformeSalvateFiltrate.clear();
                     notifyItemRangeRemoved(0, proformeSalvateFiltrate.size()-1);
@@ -165,7 +170,13 @@ public class ProformeSalavateAdapter extends RecyclerView.Adapter<RecyclerView.V
                         if(proformeSalvate.get(i).getNrFact() == null ){
                             if(proformeSalvate.get(i).getClient().equals(client) && proformeSalvate.get(i).getData().equals(data)) proformeSalvate.get(i).setVisible(true);
                         } else {
-                            if(proformeSalvate.get(i).getNrFact() == nrProforma) proformeSalvate.get(i).setVisible(true);
+                            if(mInstance instanceof FacturiActivity){
+                                if (proformeSalvate.get(i).getNr_unic() == nr_unic)
+                                    proformeSalvate.get(i).setVisible(true);
+                            } else {
+                                if (proformeSalvate.get(i).getNrFact() == nrProforma)
+                                    proformeSalvate.get(i).setVisible(true);
+                            }
                         }
 
                         if(proformeSalvate.get(i).getVisible()) proformeSalvateFiltrate.add(proformeSalvate.get(i));

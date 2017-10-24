@@ -79,6 +79,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+       // getApplication().setTheme(R.style.Dark);
         context = this;
         recyclerView = (RecyclerView) findViewById(R.id.recycler);
         butoane = new ArrayList<>();

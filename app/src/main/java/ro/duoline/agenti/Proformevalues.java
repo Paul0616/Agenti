@@ -9,10 +9,19 @@ public class Proformevalues {
     private Boolean visible;
     private String client, data, denProdus, um, cod_fiscal;
     private Integer nrCrt, buc, tva, nrFact;
+    private long nr_unic;
     private Float pret_livr;
 
     public void setNrFact(Integer nrFact) {
         this.nrFact = nrFact;
+    }
+
+    public long getNr_unic() {
+        return nr_unic;
+    }
+
+    public void setNr_unic(long nr_unic) {
+        this.nr_unic = nr_unic;
     }
 
     public Integer getNrFact() {

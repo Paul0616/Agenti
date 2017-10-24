@@ -18,3 +18,10 @@
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
 </resources>
+<resources>
+<style name="Dark" >
+    <item name="colorBackground">#12CDEF</item>
+    <item name="colorText">#c8ffffff</item>
+    <item name="colorText">#ffaa06</item>
+</style>
+</resources>
