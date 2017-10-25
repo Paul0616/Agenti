@@ -29,6 +29,7 @@ public class CategoriiProduseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTheme(SaveSharedPreference.getStyle(this));
         setContentView(R.layout.activity_categorii_produse);
         this.setTitle("Categorii Produse");
         recyclerCategorii = (RecyclerView) findViewById(R.id.recycler_categorii);

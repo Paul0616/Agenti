@@ -59,6 +59,7 @@ public class FacturiActivity extends AppCompatActivity implements LoaderManager.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTheme(SaveSharedPreference.getStyle(this));
         setContentView(R.layout.activity_facturi);
         this.setTitle("Facturi: " + PreferenceManager.getDefaultSharedPreferences(FacturiActivity.this).getString("USER", ""));
         recyclerView = (RecyclerView) findViewById(R.id.recyclerFacturiServer);

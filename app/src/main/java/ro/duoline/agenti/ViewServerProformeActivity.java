@@ -41,6 +41,7 @@ public class ViewServerProformeActivity extends AppCompatActivity implements Loa
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTheme(SaveSharedPreference.getStyle(this));
         setContentView(R.layout.activity_view_server_proforme);
         this.setTitle("Intocmite de: " + PreferenceManager.getDefaultSharedPreferences(ViewServerProformeActivity.this).getString("USER", ""));
         recyclerView = (RecyclerView) findViewById(R.id.recyclerProformeServer);

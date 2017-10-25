@@ -44,7 +44,10 @@
         <activity
             android:name=".ViewServerProformeActivity"
             android:parentActivityName=".MainActivity" />
-        <activity android:name=".FacturiActivity"></activity>
+        <activity android:name=".FacturiActivity" />
+        <activity
+            android:name=".OptiuniActivity"
+            android:label="@string/title_activity_optiuni" />
     </application>
 
 </manifest>

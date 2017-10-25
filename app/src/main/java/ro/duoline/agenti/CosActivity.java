@@ -30,6 +30,7 @@ public class CosActivity extends AppCompatActivity implements RecyclerItemTouchH
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTheme(SaveSharedPreference.getStyle(this));
         setContentView(R.layout.activity_cos);
         this.setTitle("Cos Produse");
         controller.deleteZeroValuesfromCos();

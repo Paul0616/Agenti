@@ -97,6 +97,11 @@ public class ButoaneAdapter extends RecyclerView.Adapter<ButoaneAdapter.ViewHold
                         Intent i = new Intent(context, FacturiActivity.class);
                         context.startActivity(i);
                     }
+
+                    if(butoane.get(getAdapterPosition()).getTextButon().equals("OPTIUNI")){
+                        Intent i = new Intent(context, OptiuniActivity.class);
+                        context.startActivity(i);
+                    }
                 }
             });
 

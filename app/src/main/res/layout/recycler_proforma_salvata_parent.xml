@@ -16,7 +16,7 @@
         android:layout_alignParentStart="true"
         android:padding="5dp"
         android:text="9999"
-        android:textColor="@color/colorFacturi"
+        android:textColor="?colorTextAccentSup"
         android:textSize="12sp" />
 
     <TextView
@@ -33,7 +33,7 @@
         android:layout_weight="0.90"
         android:padding="5dp"
         android:text="TextView"
-        android:textColor="@color/colorText" />
+        android:textColor="?colorText" />
 
     <TextView
         android:id="@+id/textData"
@@ -45,7 +45,7 @@
         android:layout_margin="3dp"
         android:padding="5dp"
         android:text="20-10-2017"
-        android:textColor="@color/colorText"
+        android:textColor="?colorText"
         android:textSize="12sp" />
 
 </RelativeLayout>

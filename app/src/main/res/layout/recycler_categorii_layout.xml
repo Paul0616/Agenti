@@ -18,7 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/round_button"
-            android:backgroundTint="@color/colorFacturi" />
+            android:backgroundTint="?colorTextAccentSup" />
 
         <TextView
             android:id="@+id/crt_textView"
@@ -28,7 +28,7 @@
             android:gravity="center_vertical"
             android:text="53"
             android:textAlignment="center"
-            android:textColor="@color/colorBackground"
+            android:textColor="?colorBackground"
             android:textSize="12sp" />
     </RelativeLayout>
 
@@ -45,7 +45,7 @@
         android:gravity="center_vertical|end"
         android:text="COMANDA"
         android:textAlignment="textStart"
-        android:textColor="@color/colorText"
+        android:textColor="?colorText"
         android:textSize="18sp" />
 
     <TextView
@@ -56,6 +56,6 @@
         android:layout_weight="0.1"
         android:gravity="center_vertical"
         android:text="1450"
-        android:textColor="@color/colorText"
+        android:textColor="?colorText"
         android:textSize="10sp" />
 </LinearLayout>

@@ -35,6 +35,7 @@ public class ProduseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTheme(SaveSharedPreference.getStyle(this));
         setContentView(R.layout.activity_produse);
         clasa = getIntent().getStringExtra("clasa");
         if(clasa == null) clasa = "";

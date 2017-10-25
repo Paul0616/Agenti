@@ -36,6 +36,7 @@ public class ParteneriActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTheme(SaveSharedPreference.getStyle(this));
         setContentView(R.layout.activity_parteneri);
         this.setTitle("Clienti");
         recyclerViewParteneri = (RecyclerView) findViewById(R.id.recyclerViewParteneri);

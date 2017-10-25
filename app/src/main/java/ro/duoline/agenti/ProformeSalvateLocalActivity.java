@@ -16,6 +16,7 @@ public class ProformeSalvateLocalActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTheme(SaveSharedPreference.getStyle(this));
         setContentView(R.layout.activity_proforme_salvate_local);
         recyclerView = (RecyclerView)findViewById(R.id.recyclerSalvate);
         layoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false);

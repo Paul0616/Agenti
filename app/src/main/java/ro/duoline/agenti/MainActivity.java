@@ -8,7 +8,9 @@ import android.content.res.Resources;
 import android.database.sqlite.SQLiteDatabase;
 
 import android.net.Uri;
+import android.os.PersistableBundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.LoaderManager;
@@ -69,25 +71,29 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private JSONArray jArray; //contine lista cu toate firmele si datele de conectare la Bazele lor de Date
     private Boolean produseLoaded = false;
     private Boolean parteneriLoaded = false;
-    private Res res;
+
     DBController controller = new DBController(this);
 
     private ProgressDialog pd;
 
     private ArrayList<ButoaneMeniuPrincipal>  butoane;
+    public int temacurenta;
 
     @Override
-    public Resources getResources() {
-        if(res == null){
-            res = new Res(super.getResources());
+    protected void onResume() {
+        super.onResume();
+        if(temacurenta != SaveSharedPreference.getStyle(this)){
+            setTheme(SaveSharedPreference.getStyle(this));
+            recreate();
         }
-        return res;
     }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTheme(R.style.stilLight);
+        temacurenta = SaveSharedPreference.getStyle(this);
+        setTheme(temacurenta);
         setContentView(R.layout.activity_main);
        // getApplication().setTheme(R.style.Dark);
         context = this;

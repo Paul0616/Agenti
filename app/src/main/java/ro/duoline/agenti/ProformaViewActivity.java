@@ -79,6 +79,7 @@ public class ProformaViewActivity extends AppCompatActivity implements LoaderMan
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTheme(SaveSharedPreference.getStyle(this));
         setContentView(R.layout.activity_proforma_view);
         nrProforma = (TextView) findViewById(R.id.nrProformaTextView);
         dataProforma = (TextView) findViewById(R.id.dataProformaTextView);

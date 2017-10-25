@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="ro.duoline.agenti.FacturiActivity"
-    android:background="@color/colorBackground">
+    android:background="?colorBackground">
 
     <RelativeLayout
         android:id="@+id/delaContainer"
@@ -16,7 +16,7 @@
         android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:background="@color/colorTextAccent"
+        android:background="?colorTextAccent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
