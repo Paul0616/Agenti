@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     protected void onResume() {
         super.onResume();
         if(temacurenta != SaveSharedPreference.getStyle(this)){
-            setTheme(SaveSharedPreference.getStyle(this));
+            //setTheme(SaveSharedPreference.getStyle(this));
             recreate();
         }
     }
