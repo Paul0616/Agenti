@@ -12,8 +12,19 @@ public class SaveSharedPreference {
     //static final boolean LOGGED = false;
 
 
+
     static SharedPreferences getSharedPreference(Context ctx) {
         return PreferenceManager.getDefaultSharedPreferences(ctx);
+    }
+
+    public static  Boolean getNeedSincronyze(Context ctx){
+        return getSharedPreference(ctx).getBoolean("SINCRONIZARE", false);
+    }
+
+    public static void setNeedSincronyze(Context ctx, Boolean sincr){
+        SharedPreferences.Editor editor = getSharedPreference(ctx).edit();
+        editor.putBoolean("SINCRONIZARE", sincr);
+        editor.commit();
     }
 
     public static void setStyle(Context context, int style){

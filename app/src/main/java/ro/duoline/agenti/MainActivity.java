@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
+    private FloatingActionButton fab;
     private ButoaneAdapter adapter;
     private static Context context;
     private long datestart;
@@ -86,6 +87,15 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             //setTheme(SaveSharedPreference.getStyle(this));
             recreate();
         }
+        View parentLayout = findViewById(android.R.id.content);
+        Long lastRefresh = SaveSharedPreference.getLastRefreshTime(context);
+        lastRefresh = Calendar.getInstance().getTimeInMillis() - lastRefresh;
+        Boolean needSync = SaveSharedPreference.getNeedSincronyze(MainActivity.this);
+        if((lastRefresh > (30 * 60 * 1000)) || needSync){ //mai mare de 30 minute
+            afiseazaSnackBar(parentLayout);
+        }
+
+
     }
 
 
@@ -99,41 +109,14 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         context = this;
         recyclerView = (RecyclerView) findViewById(R.id.recycler);
         butoane = new ArrayList<>();
-
         pd = new ProgressDialog(this);
         pd.setMessage("Se incarca stocurile si lista de clienti de pe server...");
         pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.floatingActionButton);
+        fab = (FloatingActionButton) findViewById(R.id.floatingActionButton);
         fab.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                Long lastRefresh = SaveSharedPreference.getLastRefreshTime(context);
-                String refreshTxt = "";
-                if(lastRefresh == 0){
-                    refreshTxt = "Nu a fost facut nici un Refresh pentru stocuri";
-                } else {
-                    lastRefresh = Calendar.getInstance().getTimeInMillis() - lastRefresh;
-                    long minutes = TimeUnit.MILLISECONDS.toMinutes(lastRefresh);
-                    long seconds = TimeUnit.MILLISECONDS.toSeconds(lastRefresh);
-                    long hours = TimeUnit.MILLISECONDS.toHours(lastRefresh);
-                    refreshTxt = String.format("%02d:%02d:%02d",
-                            TimeUnit.MILLISECONDS.toHours(lastRefresh),
-                            TimeUnit.MILLISECONDS.toMinutes(lastRefresh) -
-                                    TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(lastRefresh)),
-                            TimeUnit.MILLISECONDS.toSeconds(lastRefresh) -
-                                    TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(lastRefresh)));
-                    refreshTxt = refreshTxt + " de de la ultima incarcare a stocurilor in telefon";
-                }
-                Snackbar.make(v, refreshTxt, Snackbar.LENGTH_LONG)
-                        .setAction("SINCRONIZEAZA", new View.OnClickListener(){
-                            @Override
-                            public void onClick(View v) {
-                                String dateconectare = controller.getDateConectare(PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("FIRMA", "Agenti"));
-                                produseLoaded = false;
-                                parteneriLoaded = false;
-                                loadProduse(dateconectare, PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("DEBIT", ""));
-                            }
-                        }).show();
+                afiseazaSnackBar(v);
             }
         });
         listCreate(context);
@@ -155,6 +138,36 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     }
 
+    private void afiseazaSnackBar(View v){
+        Long lastRefresh = SaveSharedPreference.getLastRefreshTime(context);
+        String refreshTxt = "";
+        if(lastRefresh == 0){
+            refreshTxt = "Nu a fost facut nici un Refresh pentru stocuri";
+        } else {
+            lastRefresh = Calendar.getInstance().getTimeInMillis() - lastRefresh;
+            long minutes = TimeUnit.MILLISECONDS.toMinutes(lastRefresh);
+            long seconds = TimeUnit.MILLISECONDS.toSeconds(lastRefresh);
+            long hours = TimeUnit.MILLISECONDS.toHours(lastRefresh);
+            refreshTxt = String.format("%02d:%02d:%02d",
+                    TimeUnit.MILLISECONDS.toHours(lastRefresh),
+                    TimeUnit.MILLISECONDS.toMinutes(lastRefresh) -
+                            TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(lastRefresh)),
+                    TimeUnit.MILLISECONDS.toSeconds(lastRefresh) -
+                            TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(lastRefresh)));
+            refreshTxt = refreshTxt + " de de la ultima incarcare a stocurilor in telefon";
+        }
+        Snackbar.make(v, refreshTxt, Snackbar.LENGTH_LONG)
+                .setAction("SINCRONIZEAZA", new View.OnClickListener(){
+                    @Override
+                    public void onClick(View v) {
+                        String dateconectare = controller.getDateConectare(PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("FIRMA", "Agenti"));
+                        produseLoaded = false;
+                        parteneriLoaded = false;
+                        loadProduse(dateconectare, PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("DEBIT", ""));
+                    }
+                }).show();
+        SaveSharedPreference.setNeedSincronyze(MainActivity.this, false);
+    }
 
     //*****************functie pentru afisare introducerii parolei**************
     public void cereParola(){

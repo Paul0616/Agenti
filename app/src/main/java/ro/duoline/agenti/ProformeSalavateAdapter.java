@@ -220,10 +220,12 @@ public class ProformeSalavateAdapter extends RecyclerView.Adapter<RecyclerView.V
             butTrimite.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    SaveSharedPreference.setNeedSincronyze(mInstance.getBaseContext(), true);
                     Intent i = new Intent(context, ProformaViewActivity.class);
                     i.putExtra("cod_fiscal", proformeSalvateFiltrate.get(getAdapterPosition()).getCod_fiscal());
                     i.putExtra("data", proformeSalvateFiltrate.get(getAdapterPosition()).getData());
                     ((ProformeSalvateLocalActivity) mInstance).startActivity(i);
+
                 }
             });
             butSterge.setOnClickListener(new View.OnClickListener() {

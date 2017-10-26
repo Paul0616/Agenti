@@ -141,6 +141,7 @@ public class ProformaViewActivity extends AppCompatActivity implements LoaderMan
                 if(COD_FISCAL == null && DATA == null) {
                     controller.setCosNetrimis();
                 }
+
                 Intent i = new Intent(getBaseContext(), MainActivity.class);
                 startActivity(i);
             }
@@ -397,6 +398,7 @@ public class ProformaViewActivity extends AppCompatActivity implements LoaderMan
                 } else {
                     controller.deletefromCosSalvate(COD_FISCAL, DATA);
                 }
+                SaveSharedPreference.setNeedSincronyze(ProformaViewActivity.this, true);
                 Intent i = new Intent(getBaseContext(), MainActivity.class);
                 startActivity(i);
                 Toast.makeText(getBaseContext(), "PROFORMA TRIMISA CU SUCCES!!!", Toast.LENGTH_LONG).show();
