@@ -3,6 +3,7 @@ package ro.duoline.agenti;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,7 +45,10 @@ public class ButoaneAdapter extends RecyclerView.Adapter<ButoaneAdapter.ViewHold
     public void onBindViewHolder(ButoaneAdapter.ViewHolder holder, int position) {
        holder.textButon.setText(butoane.get(position).getTextButon());
        holder.iconButon.setImageDrawable(butoane.get(position).getIcon());
-       holder.cerc.setBackgroundTintList(ColorStateList.valueOf(butoane.get(position).getCuloareButon()));
+       if(Build.VERSION.SDK_INT >= 21) {
+            holder.cerc.setBackgroundTintList(ColorStateList.valueOf(butoane.get(position).getCuloareButon()));
+
+       }
         if(butoane.get(position).getMesaj()){
             holder.mesajTextButon.setVisibility(View.VISIBLE);
         } else {
@@ -77,12 +81,21 @@ public class ButoaneAdapter extends RecyclerView.Adapter<ButoaneAdapter.ViewHold
                     }
                     if(butoane.get(getAdapterPosition()).getTextButon().equals("COMANDA")){
                         Intent i = new Intent(context, CategoriiProduseActivity.class);
+                        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         context.startActivity(i);
 
                     }
+
+                 //   if(butoane.get(getAdapterPosition()).getTextButon().equals("SCANARE / INVENTARIERE")){
+                   //     Intent i = new Intent(context, ScanareActivity.class);
+                    //    context.startActivity(i);
+
+                //    }
+
                     if(butoane.get(getAdapterPosition()).getTextButon().equals("PROFORME SALVATE")){
                         if(mInstance.controller.isCosNetrimis()) {
                             Intent i = new Intent(context, ProformeSalvateLocalActivity.class);
+                            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             context.startActivity(i);
                         }
 
@@ -90,16 +103,19 @@ public class ButoaneAdapter extends RecyclerView.Adapter<ButoaneAdapter.ViewHold
 
                     if(butoane.get(getAdapterPosition()).getTextButon().equals("PROFORME")){
                             Intent i = new Intent(context, ViewServerProformeActivity.class);
+                        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             context.startActivity(i);
                     }
 
                     if(butoane.get(getAdapterPosition()).getTextButon().equals("FACTURI")){
                         Intent i = new Intent(context, FacturiActivity.class);
+                        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         context.startActivity(i);
                     }
 
                     if(butoane.get(getAdapterPosition()).getTextButon().equals("OPTIUNI")){
                         Intent i = new Intent(context, OptiuniActivity.class);
+                        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         context.startActivity(i);
                     }
                 }
