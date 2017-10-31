@@ -13,4 +13,5 @@
     <color name="colorBackground">#000</color>
     <color name="colorText">#c8ffffff</color>
     <color name="colorTextAccent">#ffaa06</color>
+    <color name="colorScan">#50ff7590</color>
 </resources>

@@ -86,11 +86,12 @@ public class ButoaneAdapter extends RecyclerView.Adapter<ButoaneAdapter.ViewHold
 
                     }
 
-                 //   if(butoane.get(getAdapterPosition()).getTextButon().equals("SCANARE / INVENTARIERE")){
-                   //     Intent i = new Intent(context, ScanareActivity.class);
-                    //    context.startActivity(i);
+                    if(butoane.get(getAdapterPosition()).getTextButon().equals("SCANARE / INVENTARIERE")){
+                        Intent i = new Intent(context, ScanareActivity.class);
+                        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        context.startActivity(i);
 
-                //    }
+                   }
 
                     if(butoane.get(getAdapterPosition()).getTextButon().equals("PROFORME SALVATE")){
                         if(mInstance.controller.isCosNetrimis()) {

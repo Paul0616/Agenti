@@ -48,6 +48,13 @@
         <activity
             android:name=".OptiuniActivity"
             android:label="@string/title_activity_optiuni" />
+        <activity
+            android:name=".ScanareActivity"
+            android:label="Scanare Cod"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".UserSettingsActivity"
+            android:label="@string/title_activity_user_settings"></activity>
     </application>
 
 </manifest>

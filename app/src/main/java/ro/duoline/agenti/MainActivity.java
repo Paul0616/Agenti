@@ -58,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private long datestart;
     private String numeDbFirma, client, passw;
     //http://contliv.eu/agentiAplicatie/getProduse.php?dateconectare=192.168.88.5%2Ctixy_test%2CSYSDBA%2Cc%40ntliv2015&debit=371
+    //http://www.contliv.eu/agentiAplicatie/scanareCod.php?dateconectare=192.168.88.5%2Ctixy_test%2CSYSDBA%2Cc%40ntliv2015&debit=371&cod=826
 
     private AlertDialog alertDialog;
     private static final int FIRME_LOADER_ID = 33;
@@ -330,14 +331,14 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         btn.setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_action_name));
         btn.setMesaj(false);
         butoane.add(btn);
-/*
+
         btn = new ButoaneMeniuPrincipal();
         btn.setCuloareButon(ContextCompat.getColor(context, R.color.colorScanare));
         btn.setTextButon("SCANARE / INVENTARIERE");
         btn.setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_scan));
         btn.setMesaj(false);
         butoane.add(btn);
-       */
+    /*   */
         btn = new ButoaneMeniuPrincipal();
         btn.setCuloareButon(ContextCompat.getColor(context, R.color.colorSalvate));
         btn.setTextButon("PROFORME SALVATE");
