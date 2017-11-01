@@ -64,8 +64,10 @@ public class ScanareActivity extends AppCompatActivity implements LoaderManager.
             public void onClick(View view) {
                 if(PreferenceManager.getDefaultSharedPreferences(ScanareActivity.this).getString("introducereCod", "1").equals("1")) {
                     new IntentIntegrator(ScanareActivity.this).initiateScan();
-                } else {
-                    Toast.makeText(getBaseContext(), "trebuie implementat manual si de pe scanner", Toast.LENGTH_LONG).show(); //TODO:
+                } else if(PreferenceManager.getDefaultSharedPreferences(ScanareActivity.this).getString("introducereCod", "1").equals("2")){
+                    Toast.makeText(getBaseContext(), "trebuie implementat pentru scanner de cod USB", Toast.LENGTH_LONG).show();
+                } else if(PreferenceManager.getDefaultSharedPreferences(ScanareActivity.this).getString("introducereCod", "1").equals("3")){
+                    Toast.makeText(getBaseContext(), "trebuie implementat pentru manual input", Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -111,7 +113,20 @@ public class ScanareActivity extends AppCompatActivity implements LoaderManager.
                 if(PreferenceManager.getDefaultSharedPreferences(ScanareActivity.this).getString("cautareCod", "1").equals("1")) {
                     makeURLConnection(makeURL(SCAN_URL_BASE, SCAN_FILE_PHP_QUERY, param), SCAN_LOADER_ID);
                 } else {
-                    Toast.makeText(getBaseContext(), "trebuie cautat pe telefon", Toast.LENGTH_LONG).show(); //TODO:
+                    ProduseValues pv = controller.getSpecificProdus(Integer.parseInt(result.getContents()));
+                    if(pv.getDenumire() != null) {
+                        txtDenumire.setText(pv.getDenumire());
+                    } else {
+                        txtDenumire.setText("COD PRODUS NEGASIT!...");
+                    }
+                        txtUm.setText(pv.getUm());
+                        txtStoc.setText("" + pv.getStoc());
+                        txtRezervata.setText("" + pv.getRezervata());
+                        txtTva.setText("" + pv.getTva());
+                        txtPret_livr.setText("" + pv.getPret_livr());
+                        int ramase = pv.getStoc() - pv.getRezervata();
+                        txtRamase.setText("" + ramase);
+
                 }
             }
         } else {

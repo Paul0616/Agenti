@@ -11,6 +11,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by Paul on 04.10.2017.
@@ -18,7 +19,7 @@ import java.util.List;
 
 public class DBController extends SQLiteOpenHelper {
     public DBController(Context applicationcontext){
-        super(applicationcontext, "test.db", null, 12);
+        super(applicationcontext, "test.db", null, 13);
     }
 
     //Create Table
@@ -32,7 +33,7 @@ public class DBController extends SQLiteOpenHelper {
         db.execSQL(query);
         query = "CREATE TABLE produse (ID INTEGER PRIMARY KEY AUTOINCREMENT, cod INTEGER, stoc INTEGER, rezervata INTEGER, clasa TEXT, denumire TEXT, um TEXT, tva INTEGER, pret_livr REAL)";
         db.execSQL(query);
-        query = "CREATE TABLE cos (ID INTEGER PRIMARY KEY AUTOINCREMENT, cod INTEGER, comandate INTEGER, cod_fiscal TEXT, trimisa INTEGER, data TEXT)";
+        query = "CREATE TABLE cos (ID INTEGER PRIMARY KEY AUTOINCREMENT, nrProvizoriuProforma INTEGER, cod INTEGER, comandate INTEGER, cod_fiscal TEXT, trimisa INTEGER, data TEXT)";
         db.execSQL(query);
         query = "CREATE TABLE parteneri (ID INTEGER PRIMARY KEY AUTOINCREMENT, denumire INTEGER, cod_fiscal TEXT, codtara TEXT)";
         db.execSQL(query);
@@ -288,6 +289,9 @@ public class DBController extends SQLiteOpenHelper {
         SQLiteDatabase database = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("trimisa", 0);
+        Random r = new Random();
+        int i1 = r.nextInt(100);
+        values.put("nrProvizoriuProforma",i1 );
         database.update("cos", values, "trimisa = 1", null);
         database.close();
     }
@@ -295,7 +299,7 @@ public class DBController extends SQLiteOpenHelper {
     synchronized public List<Proformevalues> getProformeNesalvate(){
         List<Proformevalues> data = new ArrayList<Proformevalues>();
         Proformevalues pv;
-        String sql = "SELECT cos.cod_fiscal AS cod_fiscal, cos.data AS data, parteneri.denumire AS client FROM cos INNER JOIN parteneri ON cos.cod_fiscal = parteneri.cod_fiscal WHERE trimisa = 0 GROUP BY cos.cod_fiscal, cos.data";
+        String sql = "SELECT cos.cod_fiscal AS cod_fiscal, cos.data AS data, cos.nrProvizoriuProforma AS nrProvizoriu, parteneri.denumire AS client FROM cos INNER JOIN parteneri ON cos.cod_fiscal = parteneri.cod_fiscal WHERE trimisa = 0 GROUP BY cos.cod_fiscal, cos.data, cos.nrProvizoriuProforma";
 
 
         String selectQuery = "SELECT cos.comandate AS comandate, produse.denumire AS denumire, produse.um AS um, produse.tva AS tva, produse.pret_livr AS pret_livr FROM cos ";
@@ -313,6 +317,7 @@ public class DBController extends SQLiteOpenHelper {
             pv.setClient(cursorMaster.getString(cursorMaster.getColumnIndex("client")));
             pv.setData(cursorMaster.getString(cursorMaster.getColumnIndex("data")));
             pv.setCod_fiscal(cursorMaster.getString(cursorMaster.getColumnIndex("cod_fiscal")));
+            pv.setNr_unic(Long.valueOf(cursorMaster.getString(cursorMaster.getColumnIndex("nrProvizoriu"))));
             data.add(pv);
             String sqlJos = selectQuery + "AND cos.cod_fiscal = " + cursorMaster.getString(cursorMaster.getColumnIndex("cod_fiscal")) +
                     " AND cos.data = '" + cursorMaster.getString(cursorMaster.getColumnIndex("data")) + "'";
@@ -327,6 +332,7 @@ public class DBController extends SQLiteOpenHelper {
                 pv.setNrCrt(i++);
                 pv.setClient(cursorMaster.getString(cursorMaster.getColumnIndex("client")));
                 pv.setData(cursorMaster.getString(cursorMaster.getColumnIndex("data")));
+                pv.setNr_unic(Long.valueOf(cursorMaster.getString(cursorMaster.getColumnIndex("nrProvizoriu"))));
                 pv.setDenProdus(cursorDetail.getString(cursorDetail.getColumnIndex("denumire")));
                 pv.setUm(cursorDetail.getString(cursorDetail.getColumnIndex("um")));
                 pv.setTva(cursorDetail.getInt(cursorDetail.getColumnIndex("tva")));
@@ -345,6 +351,7 @@ public class DBController extends SQLiteOpenHelper {
             pv.setClient(cursorMaster.getString(cursorMaster.getColumnIndex("client")));
             pv.setData(cursorMaster.getString(cursorMaster.getColumnIndex("data")));
             pv.setCod_fiscal(cursorMaster.getString(cursorMaster.getColumnIndex("cod_fiscal")));
+            pv.setNr_unic(Long.valueOf(cursorMaster.getString(cursorMaster.getColumnIndex("nrProvizoriu"))));
             data.add(pv);
             cursorMaster.moveToNext();
         }
@@ -432,6 +439,28 @@ public class DBController extends SQLiteOpenHelper {
         }
         database.close();
         return data;
+    }
+
+    synchronized public ProduseValues getSpecificProdus(int codProdus){
+        ProduseValues pv = new ProduseValues();;
+        String selectQuery = "SELECT produse.denumire AS denumire, produse.um AS um, produse.stoc AS stoc, produse.rezervata AS rezervata, produse.tva AS tva, produse.pret_livr AS pret_livr " +
+                "FROM produse WHERE produse.cod = " + codProdus;
+        SQLiteDatabase database = this.getReadableDatabase();
+        Cursor cursor = database.rawQuery(selectQuery, null);
+        cursor.moveToFirst();
+        while(!cursor.isAfterLast()) {
+
+            pv.setDenumire(cursor.getString(cursor.getColumnIndex("denumire")));
+            pv.setUm(cursor.getString(cursor.getColumnIndex("um")));
+            pv.setCodProdus(codProdus);
+            pv.setStoc(cursor.getInt(cursor.getColumnIndex("stoc")));
+            pv.setRezervata(cursor.getInt(cursor.getColumnIndex("rezervata")));
+            pv.setTva(cursor.getInt(cursor.getColumnIndex("tva")));
+            pv.setPret_livr(cursor.getFloat(cursor.getColumnIndex("pret_livr")));
+            cursor.moveToNext();
+        }
+        database.close();
+        return  pv;
     }
 
     synchronized public List<ProduseValues> getProduse(Boolean all, String filtru, String clasa){
