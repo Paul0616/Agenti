@@ -156,6 +156,7 @@ public class ProformeSalavateAdapter extends RecyclerView.Adapter<RecyclerView.V
                 public void onClick(View v) {
                     String client = proformeSalvateFiltrate.get(getAdapterPosition()).getClient();
                     String data = proformeSalvateFiltrate.get(getAdapterPosition()).getData();
+                    long nrProvizoriu = proformeSalvateFiltrate.get(getAdapterPosition()).getNr_unic();
                     int nrProforma = 0;
                     long nr_unic = 0;
                     if(proformeSalvateFiltrate.get(getAdapterPosition()).getNrFact() != null) {
@@ -168,7 +169,7 @@ public class ProformeSalavateAdapter extends RecyclerView.Adapter<RecyclerView.V
                     allChildrensInvisible();
                     for(int i=0; i<proformeSalvate.size(); i++){
                         if(proformeSalvate.get(i).getNrFact() == null ){
-                            if(proformeSalvate.get(i).getClient().equals(client) && proformeSalvate.get(i).getData().equals(data)) proformeSalvate.get(i).setVisible(true);
+                            if(proformeSalvate.get(i).getClient().equals(client) && proformeSalvate.get(i).getData().equals(data) && (proformeSalvate.get(i).getNr_unic() == nrProvizoriu)) proformeSalvate.get(i).setVisible(true);
                         } else {
                             if(mInstance instanceof FacturiActivity){
                                 if (proformeSalvate.get(i).getNr_unic() == nr_unic)
@@ -224,6 +225,7 @@ public class ProformeSalavateAdapter extends RecyclerView.Adapter<RecyclerView.V
                     Intent i = new Intent(context, ProformaViewActivity.class);
                     i.putExtra("cod_fiscal", proformeSalvateFiltrate.get(getAdapterPosition()).getCod_fiscal());
                     i.putExtra("data", proformeSalvateFiltrate.get(getAdapterPosition()).getData());
+                    i.putExtra("nrProvizoriu", proformeSalvateFiltrate.get(getAdapterPosition()).getNr_unic());
                     ((ProformeSalvateLocalActivity) mInstance).startActivity(i);
 
                 }

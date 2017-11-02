@@ -74,6 +74,7 @@ public class ProformaViewActivity extends AppCompatActivity implements LoaderMan
     private static final int SETPROFORMA_LOADER_ID = 38;
     private static String COD_FISCAL;
     private static String DATA;
+    private static long NRPROVIZORIU;
 
 
     @Override
@@ -105,6 +106,7 @@ public class ProformaViewActivity extends AppCompatActivity implements LoaderMan
         Intent intent = getIntent();
         COD_FISCAL = intent.getStringExtra("cod_fiscal");
         DATA = intent.getStringExtra("data");
+        NRPROVIZORIU = intent.getLongExtra("nrProvizoriu", 0);
         if(COD_FISCAL == null && DATA == null) {
             SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
             dataProforma.setText(sdf.format(new Date()));
@@ -114,7 +116,7 @@ public class ProformaViewActivity extends AppCompatActivity implements LoaderMan
         } else {
             dataProforma.setText(DATA);
             clientProforma.setText(controller.getClientFromParteneri(COD_FISCAL));
-            listaCos = controller.getCosSalvat(COD_FISCAL, DATA);
+            listaCos = controller.getCosSalvat(COD_FISCAL, DATA, NRPROVIZORIU);
         }
 
 
@@ -155,7 +157,7 @@ public class ProformaViewActivity extends AppCompatActivity implements LoaderMan
         if(COD_FISCAL == null && DATA == null) {
             cos = controller.getCos();
         } else {
-            cos = controller.getCosSalvat(COD_FISCAL, DATA);
+            cos = controller.getCosSalvat(COD_FISCAL, DATA, NRPROVIZORIU);
         }
         float rTotal = 0;
         float rTva = 0;
@@ -396,7 +398,7 @@ public class ProformaViewActivity extends AppCompatActivity implements LoaderMan
                 if(COD_FISCAL == null && DATA == null) {
                     controller.deletefromCosAllTrimise();
                 } else {
-                    controller.deletefromCosSalvate(COD_FISCAL, DATA);
+                    controller.deletefromCosSalvate(COD_FISCAL, DATA, NRPROVIZORIU);
                 }
                 SaveSharedPreference.setNeedSincronyze(ProformaViewActivity.this, true);
                 Intent i = new Intent(getBaseContext(), MainActivity.class);

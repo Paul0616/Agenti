@@ -264,10 +264,10 @@ public class DBController extends SQLiteOpenHelper {
         database.close();
     }
 
-    synchronized public void deletefromCosSalvate(String cod_fiscal, String data){
+    synchronized public void deletefromCosSalvate(String cod_fiscal, String data, long nrprovizoriu){
         SQLiteDatabase database = this.getWritableDatabase();
         String[] args = new String[]{cod_fiscal, data};
-        database.delete("cos","trimisa = 0 AND cod_fiscal = ? AND data = ?",args);
+        database.delete("cos","trimisa = 0 AND cod_fiscal = ? AND data = ? AND nrProvizoriuProforma = "+nrprovizoriu,args);
         database.close();
     }
 
@@ -320,7 +320,7 @@ public class DBController extends SQLiteOpenHelper {
             pv.setNr_unic(Long.valueOf(cursorMaster.getString(cursorMaster.getColumnIndex("nrProvizoriu"))));
             data.add(pv);
             String sqlJos = selectQuery + "AND cos.cod_fiscal = " + cursorMaster.getString(cursorMaster.getColumnIndex("cod_fiscal")) +
-                    " AND cos.data = '" + cursorMaster.getString(cursorMaster.getColumnIndex("data")) + "'";
+                    " AND cos.data = '" + cursorMaster.getString(cursorMaster.getColumnIndex("data")) + "' AND cos.nrProvizoriuProforma = " + cursorMaster.getString(cursorMaster.getColumnIndex("nrProvizoriu"));
             Cursor cursorDetail = database.rawQuery(sqlJos, null);
             cursorDetail.moveToFirst();
             int i = 1;
@@ -542,12 +542,13 @@ public class DBController extends SQLiteOpenHelper {
         database.close();
         return data;
     }
-    synchronized public List<ProduseValues> getCosSalvat(String cod_fiscal, String data1){
+    synchronized public List<ProduseValues> getCosSalvat(String cod_fiscal, String data1, long nrprovizoriu){
         List<ProduseValues> data = new ArrayList<ProduseValues>();
         ProduseValues pv;
         String selectQuery = "SELECT cos.comandate AS comandate, cos.cod AS cod, produse.denumire AS denumire, produse.stoc AS stoc, produse.rezervata AS rezervata, " +
                 "produse.um AS um, produse.tva AS tva, produse.pret_livr AS pret_livr FROM cos ";
-        String selectCos = "LEFT OUTER JOIN produse ON cos.cod = produse.cod WHERE cos.trimisa = 0 AND cos.cod_fiscal = '" + cod_fiscal + "' AND cos.data = '" + data1 + "'";
+        String selectCos = "LEFT OUTER JOIN produse ON cos.cod = produse.cod WHERE cos.trimisa = 0 AND cos.cod_fiscal = '" + cod_fiscal + "' AND cos.data = '" + data1 + "' AND cos.nrProvizoriuProforma = " +
+                nrprovizoriu;
         selectQuery = selectQuery + selectCos;
 
         SQLiteDatabase database = this.getWritableDatabase();
