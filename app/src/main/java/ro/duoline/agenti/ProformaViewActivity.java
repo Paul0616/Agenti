@@ -33,6 +33,7 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -381,10 +382,26 @@ public class ProformaViewActivity extends AppCompatActivity implements LoaderMan
                 request.setURI(new URI(FIRME_URL_BASE+"/"+SETPROFORMA_FILE_PHP_QUERY+"?sirjson="+json+"&dateconectare="+dateconectare));
                 // 2. Execute GET request to the given URL
                 HttpResponse response = httpclient.execute(request);
-                return "YES";
+                HttpEntity entity = response.getEntity();
+                InputStream is = entity.getContent();
+
+
+                    Scanner scanner = new Scanner(is);
+                    scanner.useDelimiter("\\A");
+
+                    boolean hasInput = scanner.hasNext();
+                    if (hasInput) {
+                        return scanner.next();
+                    } else {
+                        return "{\"error\":true, \"message\":\"Serverul nu raspunde\"}";
+                    }
+
+
+
+                //return response.toString();
             } catch (Exception e) {
                 e.printStackTrace();
-                return null;
+                return "{\"error\":true, \"message\":\"Lispa Internet\"}";
 
             }
 
@@ -394,19 +411,31 @@ public class ProformaViewActivity extends AppCompatActivity implements LoaderMan
         @Override
         protected void onPostExecute(String s) {
             //Mesaj comanda trimisa
-            if(s != null) {
-                if(COD_FISCAL == null && DATA == null) {
-                    controller.deletefromCosAllTrimise();
+            try {
+                JSONObject jsonObj = new JSONObject(s);
+                if(jsonObj != null && !jsonObj.getBoolean("error")) {
+                    JSONArray proforma = prepareDataForUpload();
+                    String cod_fiscalDeLaServer = jsonObj.getJSONArray("factura").getJSONObject(0).getString("cod_fiscal");
+                    if(proforma.getJSONObject(0).getString("cod_fiscal").equals(cod_fiscalDeLaServer)) {
+                        if (COD_FISCAL == null && DATA == null) {
+                            controller.deletefromCosAllTrimise();
+                        } else {
+                            controller.deletefromCosSalvate(COD_FISCAL, DATA, NRPROVIZORIU);
+                        }
+                        SaveSharedPreference.setNeedSincronyze(ProformaViewActivity.this, true);
+                        Intent i = new Intent(getBaseContext(), MainActivity.class);
+                        startActivity(i);
+                        Toast.makeText(getBaseContext(), "PROFORMA TRIMISA CU SUCCES!!!", Toast.LENGTH_LONG).show();
+                    }
                 } else {
-                    controller.deletefromCosSalvate(COD_FISCAL, DATA, NRPROVIZORIU);
+                    Toast.makeText(ProformaViewActivity.this, "Eroare de salvare pe server:\n" + jsonObj.getString("message"), Toast.LENGTH_SHORT).show();
+                    pregatesteButoaneSalvare();
                 }
-                SaveSharedPreference.setNeedSincronyze(ProformaViewActivity.this, true);
-                Intent i = new Intent(getBaseContext(), MainActivity.class);
-                startActivity(i);
-                Toast.makeText(getBaseContext(), "PROFORMA TRIMISA CU SUCCES!!!", Toast.LENGTH_LONG).show();
-            } else {
-                pregatesteButoaneSalvare();
+
+            } catch (JSONException e){
+                e.printStackTrace();
             }
+
         }
     }
 
